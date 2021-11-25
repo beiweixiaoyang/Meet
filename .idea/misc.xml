@@ -27,12 +27,19 @@
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_search_title_item.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_search_user_item.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_stat_view_item.xml" value="0.36614583333333334" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/drawable/upload_btn_bg.xml" value="0.325" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/drawable/white_bg.xml" value="0.325" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/activity_first_upload.xml" value="0.36614583333333334" />
         <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/activity_guide.xml" value="0.33" />
         <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/activity_index.xml" value="0.25" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/activity_user_info.xml" value="0.17806484295845998" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/dialog_first_upload.xml" value="0.36614583333333334" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/dialog_send_friend.xml" value="0.36614583333333334" />
+        <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/layout_user_info_item.xml" value="0.25" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

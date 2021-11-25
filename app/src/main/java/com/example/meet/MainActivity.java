@@ -1,23 +1,45 @@
 package com.example.meet;
 
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.meet.base.BaseActivity;
+import com.example.meet.bmob.BmobManager;
+import com.example.meet.eneity.Constants;
 import com.example.meet.fragment.ChatFragment;
 import com.example.meet.fragment.MeFragment;
 import com.example.meet.fragment.SquareFragment;
 import com.example.meet.fragment.StarFragment;
+import com.example.meet.gson.TokenBean;
+import com.example.meet.manager.HttpManager;
+import com.example.meet.services.CloudService;
+import com.example.meet.ui.FirstUploadActivity;
+import com.example.meet.utils.DialogUtils;
 import com.example.meet.utils.LogUtils;
+import com.example.meet.utils.SpUtils;
+import com.example.meet.view.DialogView;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * APP主界面
@@ -50,6 +72,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FragmentTransaction squareTransaction;
     private FragmentTransaction chatTransaction;
 
+    private DialogView mUploadDialog;
+    private ImageView iv_go_upload;
+
+    private Disposable disposable;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +85,98 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initView();
         initFragment();
         checkMainTab(0);
+        checkToken();
+    }
+
+    /**
+     * 检查Token
+     */
+    private void checkToken() {
+        LogUtils.i("checkToken");
+        if (mUploadDialog != null) {
+            DialogUtils.getInstance().hideDialog(mUploadDialog);
+        }
+        //获取Token，需要三个参数：用户id，头像地址，昵称
+        String token= SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
+        if(TextUtils.isEmpty(token)){
+            String tokenPhoto= BmobManager.getInstance().getCurrentUser().getTokenPhoto();
+            String tokenNickname=BmobManager.getInstance().getCurrentUser().getTokenNickName();
+            if(TextUtils.isEmpty(tokenPhoto) && TextUtils.isEmpty(tokenNickname)){
+                createUploadDialog();
+            }else{
+                createToken();
+            }
+        }else{
+            startCloudService();
+        }
+    }
+
+    /**
+     * 创建Token
+     */
+    private void createToken() {
+        LogUtils.i("createToken");
+        //判断当前是否有用户处于登陆状态
+        if( BmobManager.getInstance().getCurrentUser() == null){
+            Toast.makeText(this, "登录异常", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //去融云后台获取Token，连接融云
+        HashMap<String,String> map=new HashMap<>();
+        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
+        map.put("name", BmobManager.getInstance().getCurrentUser().getTokenNickName());
+        map.put("portraitUri", BmobManager.getInstance().getCurrentUser().getTokenPhoto());
+        //通过OkHttp请求Token
+        //线程调度
+        disposable = Observable.create((ObservableOnSubscribe<String>) emitter -> {
+            //执行请求过程
+            String json = HttpManager.getInstance().postCloudToken(map);
+            LogUtils.i("json:" + json);
+            emitter.onNext(json);
+            emitter.onComplete();
+        }).subscribeOn(Schedulers.newThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> parsingCloudToken(s));
+    }
+
+    /**
+     * 解析token
+     * @param s
+     */
+    private void parsingCloudToken(String s) {
+        try {
+            LogUtils.i("parsingCloudToken:" + s);
+            TokenBean tokenBean = new Gson().fromJson(s, TokenBean.class);
+            if (tokenBean.getCode() == 200) {
+                if (!TextUtils.isEmpty(tokenBean.getToken())) {
+                    //保存Token
+                    SpUtils.getInstance().putString(Constants.SP_TOKEN, tokenBean.getToken());
+                    startCloudService();
+                }
+            } else if (tokenBean.getCode() == 2007) {
+                Toast.makeText(this, "注册人数已达上限，请替换成自己的Key", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            LogUtils.i("parsingCloudToken:" + e.toString());
+        }
+    }
+
+    /**
+     * 启动云服务
+     */
+    private void startCloudService() {
+        LogUtils.i("startCloudService");
+        startService(new Intent(this, CloudService.class));
+    }
+
+    /**
+     * 创建上传头像提示框
+     */
+    private void createUploadDialog() {
+        mUploadDialog=DialogUtils.getInstance().initDialogView(this,R.layout.dialog_first_upload);
+        iv_go_upload=mUploadDialog.findViewById(R.id.iv_go_upload);
+        iv_go_upload.setOnClickListener(this);
+        DialogUtils.getInstance().showDialog(mUploadDialog);
     }
 
     /**
@@ -189,6 +308,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         iv_chat = findViewById(R.id.iv_chat);
         iv_square = findViewById(R.id.iv_square);
         iv_star = findViewById(R.id.iv_star);
+        mMainLayout=findViewById(R.id.mMainLayout);
         ll_me.setOnClickListener(this);
         ll_chat.setOnClickListener(this);
         ll_star.setOnClickListener(this);
@@ -209,6 +329,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.ll_star:
                 checkMainTab(0);
+                break;
+            case R.id.iv_go_upload:
+                startActivity(new Intent(MainActivity.this, FirstUploadActivity.class));
+                DialogUtils.getInstance().hideDialog(mUploadDialog);
                 break;
         }
     }

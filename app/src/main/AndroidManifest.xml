@@ -19,8 +19,19 @@
         android:roundIcon="@mipmap/meet"
         android:supportsRtl="true"
         android:theme="@style/Theme.Meet">
-        <activity android:name=".ui.UserInfoActivity"
+        <activity
+            android:name=".ui.FirstUploadActivity"
             android:exported="false" />
+
+        <service
+            android:name=".services.CloudService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.UserInfoActivity"
+            android:exported="false"
+            android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".ui.AddFriendActivity"
             android:exported="false"
@@ -49,7 +60,7 @@
         <activity
             android:name=".ui.IndexActivity"
             android:exported="true"
-            android:theme="@style/AppThemeFullScreen"></activity>
+            android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".ui.GuideActivity"
             android:exported="false"
@@ -57,7 +68,7 @@
 
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
-            android:authorities="com.example.meet.BmobContentProvider"></provider>
+            android:authorities="com.example.meet.BmobContentProvider" />
     </application>
 
 </manifest>

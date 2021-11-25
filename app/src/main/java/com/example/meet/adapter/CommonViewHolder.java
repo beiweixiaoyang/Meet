@@ -90,8 +90,8 @@ public class CommonViewHolder extends RecyclerView.ViewHolder {
      * 设置背景颜色
      */
     public CommonViewHolder setBackgroundColor(int viewId,int color){
-        ImageView imageView=getView(viewId);
-        imageView.setBackgroundColor(color);
+        View View=getView(viewId);
+        View.setBackgroundColor(color);
         return this;
     }
 
