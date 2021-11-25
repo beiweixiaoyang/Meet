@@ -12,7 +12,9 @@ import androidx.annotation.NonNull;
 import com.example.meet.MainActivity;
 import com.example.meet.R;
 import com.example.meet.base.BaseUIActivity;
+import com.example.meet.bmob.BmobManager;
 import com.example.meet.eneity.Constants;
+import com.example.meet.utils.LogUtils;
 import com.example.meet.utils.SpUtils;
 
 /**
@@ -53,6 +55,7 @@ public class IndexActivity extends BaseUIActivity {
      * 否则进入登录页面
      */
     private void skipToMain() {
+        LogUtils.i("skipToMain");
         isFirstRun= SpUtils.getInstance().getBoolean(Constants.SP_IS_FIRST_RUN,true);
         Intent intent=new Intent();
         if(isFirstRun){
@@ -61,7 +64,12 @@ public class IndexActivity extends BaseUIActivity {
         }else{
             String token=SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
             if(TextUtils.isEmpty(token)){
-                //token为空，进入登陆页面
+                //token为空，进入下一个判断
+                if(BmobManager.getInstance().isLogin()){
+                    intent.setClass(this, MainActivity.class);
+                }else{
+                    intent.setClass(this,LoginActivity.class);
+                }
                 intent.setClass(this,LoginActivity.class);
             }else{
                 intent.setClass(this, MainActivity.class);

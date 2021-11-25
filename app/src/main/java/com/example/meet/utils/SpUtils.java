@@ -34,6 +34,7 @@ public class SpUtils {
      * MODE_WORLD_WRITEABLE:其他应用可以写
      */
     public void initSpUtils(Context context){
+        LogUtils.i("init-->SpUtils");
         sharedPreferences=context.getSharedPreferences("Meet",Context.MODE_PRIVATE);
         editor=sharedPreferences.edit();
     }
