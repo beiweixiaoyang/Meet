@@ -15,8 +15,7 @@ import com.example.meet.R;
 import com.example.meet.adapter.BasePageAdapter;
 import com.example.meet.base.BaseUIActivity;
 import com.example.meet.utils.AnimUtils;
-import com.example.meet.utils.LogUtils;
-import com.example.meet.utils.MediaPlayerUtils;
+import com.example.meet.manager.MediaPlayerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class GuideActivity extends BaseUIActivity implements View.OnClickListene
     private List<View> mPagerList=new ArrayList<>();
     private BasePageAdapter mPageAdapter;
 
-    private MediaPlayerUtils mediaPlayerUtils;
+    private MediaPlayerManager mediaPlayerManager;
 
     private ObjectAnimator animator;
 
@@ -51,7 +50,6 @@ public class GuideActivity extends BaseUIActivity implements View.OnClickListene
     }
 
     private void initView() {
-        LogUtils.i("init---> GuideActivity");
         inflater=LayoutInflater.from(this);
         mViewPager=findViewById(R.id.mViewPager);
         tv_guide_skip=findViewById(R.id.tv_guide_skip);
@@ -105,10 +103,10 @@ public class GuideActivity extends BaseUIActivity implements View.OnClickListene
      * 播放音乐
      */
     private void startMusic() {
-        mediaPlayerUtils=new MediaPlayerUtils();
+        mediaPlayerManager =new MediaPlayerManager();
         //获取到资源文件
-        mediaPlayerUtils.startPlay(getResources().openRawResourceFd(R.raw.guide));
-        mediaPlayerUtils.setLooping(true);
+        mediaPlayerManager.startPlay(getResources().openRawResourceFd(R.raw.guide));
+        mediaPlayerManager.setLooping(true);
         //属性动画
         animator= AnimUtils.rotation(iv_music_switch);
         animator.start();
@@ -138,13 +136,13 @@ public class GuideActivity extends BaseUIActivity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.iv_music_switch:
-                if(mediaPlayerUtils.MEDIA_STATUS == MediaPlayerUtils.MEDIA_STATUS_PAUSE){
-                    mediaPlayerUtils.continuePlay();
+                if(mediaPlayerManager.MEDIA_STATUS == MediaPlayerManager.MEDIA_STATUS_PAUSE){
+                    mediaPlayerManager.continuePlay();
                     animator.start();
                     iv_music_switch.setImageResource(R.drawable.img_guide_music);
-                }else if(mediaPlayerUtils.MEDIA_STATUS == MediaPlayerUtils.MEDIA_STATUS_PLAY){
+                }else if(mediaPlayerManager.MEDIA_STATUS == MediaPlayerManager.MEDIA_STATUS_PLAY){
                     animator.pause();
-                    mediaPlayerUtils.pausePlay();
+                    mediaPlayerManager.pausePlay();
                     iv_music_switch.setImageResource(R.drawable.img_guide_music_off);
                 }
                 break;
@@ -158,6 +156,6 @@ public class GuideActivity extends BaseUIActivity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mediaPlayerUtils.stopPlay();
+        mediaPlayerManager.stopPlay();
     }
 }

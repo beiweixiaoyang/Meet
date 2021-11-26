@@ -26,14 +26,13 @@ import com.example.meet.gson.TokenBean;
 import com.example.meet.manager.HttpManager;
 import com.example.meet.services.CloudService;
 import com.example.meet.ui.FirstUploadActivity;
-import com.example.meet.utils.DialogUtils;
+import com.example.meet.manager.DialogManager;
 import com.example.meet.utils.LogUtils;
 import com.example.meet.utils.SpUtils;
 import com.example.meet.view.DialogView;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -86,6 +85,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initFragment();
         checkMainTab(0);
         checkToken();
+        //模拟数据
+//        SimulationData.testData();
     }
 
     /**
@@ -93,20 +94,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void checkToken() {
         LogUtils.i("checkToken");
-        if (mUploadDialog != null) {
-            DialogUtils.getInstance().hideDialog(mUploadDialog);
-        }
         //获取Token，需要三个参数：用户id，头像地址，昵称
         String token= SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
+        LogUtils.i(token);
         if(TextUtils.isEmpty(token)){
-            String tokenPhoto= BmobManager.getInstance().getCurrentUser().getTokenPhoto();
-            String tokenNickname=BmobManager.getInstance().getCurrentUser().getTokenNickName();
+//            String tokenPhoto= BmobManager.getInstance().getCurrentUser().getTokenPhoto();
+//            String tokenNickname=BmobManager.getInstance().getCurrentUser().getTokenNickName();
+            String tokenPhoto="http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg";
+            String tokenNickname="拨打寂寞专线";
             if(TextUtils.isEmpty(tokenPhoto) && TextUtils.isEmpty(tokenNickname)){
                 createUploadDialog();
             }else{
                 createToken();
             }
-        }else{
+        }
+        else{
             startCloudService();
         }
     }
@@ -117,10 +119,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void createToken() {
         LogUtils.i("createToken");
         //判断当前是否有用户处于登陆状态
-        if( BmobManager.getInstance().getCurrentUser() == null){
-            Toast.makeText(this, "登录异常", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if( BmobManager.getInstance().getCurrentUser() == null){
+//            Toast.makeText(this, "登录异常", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
         //去融云后台获取Token，连接融云
         HashMap<String,String> map=new HashMap<>();
         map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
@@ -144,8 +146,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * @param s
      */
     private void parsingCloudToken(String s) {
+        LogUtils.i("parsingCloudToken:" + s);
         try {
-            LogUtils.i("parsingCloudToken:" + s);
             TokenBean tokenBean = new Gson().fromJson(s, TokenBean.class);
             if (tokenBean.getCode() == 200) {
                 if (!TextUtils.isEmpty(tokenBean.getToken())) {
@@ -173,10 +175,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 创建上传头像提示框
      */
     private void createUploadDialog() {
-        mUploadDialog=DialogUtils.getInstance().initDialogView(this,R.layout.dialog_first_upload);
+        mUploadDialog= DialogManager.getInstance().initDialogView(this,R.layout.dialog_first_upload);
         iv_go_upload=mUploadDialog.findViewById(R.id.iv_go_upload);
         iv_go_upload.setOnClickListener(this);
-        DialogUtils.getInstance().showDialog(mUploadDialog);
+        DialogManager.getInstance().showDialog(mUploadDialog);
     }
 
     /**
@@ -295,7 +297,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void initView() {
-        LogUtils.i("init--> MainActivity");
         ll_me = findViewById(R.id.ll_me);
         ll_star = findViewById(R.id.ll_star);
         ll_square = findViewById(R.id.ll_square);
@@ -332,7 +333,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.iv_go_upload:
                 startActivity(new Intent(MainActivity.this, FirstUploadActivity.class));
-                DialogUtils.getInstance().hideDialog(mUploadDialog);
+                DialogManager.getInstance().hideDialog(mUploadDialog);
                 break;
         }
     }

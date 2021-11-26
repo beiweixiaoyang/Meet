@@ -18,7 +18,7 @@ import com.example.meet.base.BaseUIActivity;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
 import com.example.meet.eneity.Constants;
-import com.example.meet.utils.DialogUtils;
+import com.example.meet.manager.DialogManager;
 import com.example.meet.utils.LogUtils;
 import com.example.meet.utils.SpUtils;
 import com.example.meet.view.DialogView;
@@ -82,19 +82,18 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
      */
     private void initDialogView() {
         mLoadingView=new LoadingView(this);
-        mDialogView= DialogUtils.getInstance().initDialogView(this,R.layout.dialog_code_view);
+        mDialogView= DialogManager.getInstance().initDialogView(this,R.layout.dialog_code_view);
         mPictureView=mDialogView.findViewById(R.id.pictureView);
         mPictureView.setOnViewResultListener(new TouchPictureView.OnViewResultListener() {
             @Override
             public void onResult() {
-                DialogUtils.getInstance().hideDialog(mDialogView);
+                DialogManager.getInstance().hideDialog(mDialogView);
                 sendSMS();//手指抬起并且验证成功后发送短信
             }
         });
     }
 
     private void initView() {
-        LogUtils.i("init -->LoginActivity");
         et_phone=findViewById(R.id.et_phone);
         et_code=findViewById(R.id.et_code);
         btn_send_code=findViewById(R.id.btn_send_code);
@@ -111,7 +110,7 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
     private void sendSMS() {
         LogUtils.i("sendSMS");
         String phone=et_phone.getText().toString().trim();
-        if(!TextUtils.isEmpty(phone)){
+        if(TextUtils.isEmpty(phone)){
             Toast.makeText(this,"手机号不能为空",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -124,6 +123,7 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                     mHandler.sendEmptyMessage(HANDLER_TIME);
                     Toast.makeText(LoginActivity.this,"验证码发送成功",
                             Toast.LENGTH_SHORT).show();
+
                 }else {
                     LogUtils.e("验证码发送失败"+e.toString());
                     Toast.makeText(LoginActivity.this,"验证码发送失败",
@@ -175,7 +175,8 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                 login();
                 break;
             case R.id.btn_send_code:
-                DialogUtils.getInstance().showDialog(mDialogView);
+                DialogManager.getInstance().showDialog(mDialogView);
+                LogUtils.i(String.valueOf(mDialogView == null));
                 break;
         }
     }

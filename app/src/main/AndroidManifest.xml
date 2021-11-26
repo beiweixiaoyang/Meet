@@ -10,15 +10,21 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".base.BaseApp"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:icon="@mipmap/meet"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/meet"
         android:supportsRtl="true"
         android:theme="@style/Theme.Meet">
+        <activity
+            android:name=".ui.ContactFriendActivity"
+            android:exported="false"
+            android:label="从通讯录导入"/>
         <activity
             android:name=".ui.FirstUploadActivity"
             android:exported="false" />
@@ -59,7 +65,7 @@
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".ui.IndexActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".ui.GuideActivity"
@@ -69,6 +75,16 @@
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="com.example.meet.BmobContentProvider" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.meet.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepath" />
+        </provider>
+
     </application>
 
 </manifest>

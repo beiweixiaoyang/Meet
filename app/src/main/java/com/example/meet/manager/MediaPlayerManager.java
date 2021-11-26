@@ -1,4 +1,4 @@
-package com.example.meet.utils;
+package com.example.meet.manager;
 
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * 封装MediaPlayer的相关操作
  */
-public class MediaPlayerUtils {
+public class MediaPlayerManager {
 
     /**
      * 定义音乐的播放状态
@@ -53,7 +53,7 @@ public class MediaPlayerUtils {
         }
     });
 
-    public MediaPlayerUtils() {
+    public MediaPlayerManager() {
         mMediaPlayer=new MediaPlayer();
     }
 

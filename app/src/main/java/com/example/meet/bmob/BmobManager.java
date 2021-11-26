@@ -2,16 +2,22 @@ package com.example.meet.bmob;
 
 import android.content.Context;
 
+import com.example.meet.model.Friend;
 import com.example.meet.utils.LogUtils;
+
+import java.io.File;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 /**
  * 对bmob的一些函数进行封装
@@ -115,6 +121,57 @@ public class BmobManager {
         BmobQuery<MeetUser> query = new BmobQuery<>();
         query.addWhereEqualTo(key, values);//通过key/values进行条件查询
         query.findObjects(listener);
+    }
+
+    /**
+     * 查询我的好友
+     */
+    public void queryMyFriend(FindListener<Friend>listener){
+        BmobQuery<Friend> query = new BmobQuery<>();
+        query.addWhereEqualTo("user", getCurrentUser());
+        query.findObjects(listener);
+    }
+
+
+    /**
+     *
+     * @param nickname 昵称
+     * @param file 头像
+     * @param listener 是否上传完成的监听
+     */
+    public void uploadFile(String nickname, File file, OnUploadListener listener){
+        MeetUser meetUser=getCurrentUser();
+        BmobFile bmobFile=new BmobFile(file);
+        bmobFile.uploadblock(new UploadFileListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    meetUser.setNickName(nickname);
+                    meetUser.setPhoto(bmobFile.getFileUrl());
+                    meetUser.setTokenNickName(nickname);
+                    meetUser.setTokenPhoto(bmobFile.getFileUrl());
+                    //更新用户信息
+                    meetUser.update(new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if(e == null){
+                                listener.onUploadDone();
+                            }else{
+                                listener.onUploadFailed(e);
+                                LogUtils.e("上传失败："+e.toString());
+                            }
+                        }
+                    });
+                }else{
+                    listener.onUploadFailed(e);
+                    LogUtils.e("上传失败："+e.toString());
+                }
+            }
+        });
+    }
+    public interface OnUploadListener{
+        void onUploadDone();
+        void onUploadFailed(BmobException e);
     }
 
 }

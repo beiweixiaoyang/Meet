@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_camera"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="拍摄"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:alpha="0.2"
+        android:background="@color/colorPrimary" />
+    <TextView
+        android:id="@+id/tv_album"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="从相册选择"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:alpha="0.2"
+        android:background="@color/colorPrimary" />
+    <TextView
+        android:id="@+id/tv_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="取消"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"/>
+</LinearLayout>

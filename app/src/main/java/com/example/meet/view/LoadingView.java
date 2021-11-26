@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.example.meet.R;
 import com.example.meet.utils.AnimUtils;
-import com.example.meet.utils.DialogUtils;
+import com.example.meet.manager.DialogManager;
 
 /**
  * 登录提示框
@@ -21,7 +21,7 @@ public class LoadingView {
     private ObjectAnimator mAnim;
 
     public LoadingView(Context context){
-        mLoadingView= DialogUtils.getInstance().initDialogView(context, R.layout.dialog_loading);
+        mLoadingView= DialogManager.getInstance().initDialogView(context, R.layout.dialog_loading);
         iv_loading=mLoadingView.findViewById(R.id.iv_loading);
         tv_loading=mLoadingView.findViewById(R.id.tv_loading);
         mAnim= AnimUtils.rotation(iv_loading);
@@ -29,17 +29,17 @@ public class LoadingView {
 
     public void show(){
         mAnim.start();
-        DialogUtils.getInstance().showDialog(mLoadingView);
+        DialogManager.getInstance().showDialog(mLoadingView);
     }
     public void show(String text){
         mAnim.start();
         if(!TextUtils.isEmpty(text)){
             tv_loading.setText(text);
         }
-        DialogUtils.getInstance().showDialog(mLoadingView);
+        DialogManager.getInstance().showDialog(mLoadingView);
     }
     public void hide(){
         mAnim.pause();
-        DialogUtils.getInstance().hideDialog(mLoadingView);
+        DialogManager.getInstance().hideDialog(mLoadingView);
     }
 }

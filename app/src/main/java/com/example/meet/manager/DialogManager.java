@@ -1,4 +1,4 @@
-package com.example.meet.utils;
+package com.example.meet.manager;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -6,17 +6,17 @@ import android.view.Gravity;
 import com.example.meet.R;
 import com.example.meet.view.DialogView;
 
-public class DialogUtils {
-    private static DialogUtils dialogManager;
+public class DialogManager {
+    private static DialogManager dialogManager;
 
-    private DialogUtils() {
+    private DialogManager() {
     }
 
-    public static DialogUtils getInstance() {
+    public static DialogManager getInstance() {
         if (dialogManager == null) {
-            synchronized (DialogUtils.class) {
+            synchronized (DialogManager.class) {
                 if (dialogManager == null) {
-                    dialogManager = new DialogUtils();
+                    dialogManager = new DialogManager();
                 }
             }
         }

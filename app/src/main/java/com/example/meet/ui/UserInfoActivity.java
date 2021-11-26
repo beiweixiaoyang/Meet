@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,12 +18,13 @@ import com.bumptech.glide.Glide;
 import com.example.meet.R;
 import com.example.meet.adapter.CommonAdapter;
 import com.example.meet.adapter.CommonViewHolder;
-import com.example.meet.base.BaseBackActivity;
 import com.example.meet.base.BaseUIActivity;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
+import com.example.meet.cloud.CloudManager;
+import com.example.meet.model.Friend;
 import com.example.meet.model.UserInfoModel;
-import com.example.meet.utils.DialogUtils;
+import com.example.meet.manager.DialogManager;
 import com.example.meet.utils.LogUtils;
 import com.example.meet.view.DialogView;
 
@@ -68,7 +70,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
      * 初始化添加好友提示框
      */
     private void initDialog() {
-        mAddFriendDialog = DialogUtils.getInstance()
+        mAddFriendDialog = DialogManager.getInstance()
                 .initDialogView(this, R.layout.dialog_send_friend);
         et_msg = mAddFriendDialog.findViewById(R.id.et_msg);
         tv_cancel = mAddFriendDialog.findViewById(R.id.tv_cancel);
@@ -78,7 +80,6 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
     }
 
     private void initView() {
-        LogUtils.i("init-->UserInfoActivity");
         ll_back = findViewById(R.id.ll_back);
         ll_isFriend = findViewById(R.id.ll_is_friend);
         tv_nickname = findViewById(R.id.tv_nickname);
@@ -117,6 +118,25 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                     }
                 } else {
                     LogUtils.i("查询用户信息失败：" + e.toString());
+                }
+            }
+        });
+        //3.判断是否是好友关系
+        BmobManager.getInstance().queryMyFriend(new FindListener<Friend>() {
+            @Override
+            public void done(List<Friend> list, BmobException e) {
+                if(e == null){
+                    if(list.size() > 0){
+                        //存在好友列表
+                        for (int i = 0; i < list.size(); i++) {
+                            Friend friend=list.get(i);
+                            if(friend.getFriendUser().getObjectId().equals(objectId)){
+                                //是好友关系
+                                btn_add_friend.setVisibility(View.GONE);
+                                ll_isFriend.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -179,7 +199,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_add_friend:
-                DialogUtils.getInstance().showDialog(mAddFriendDialog);
+                DialogManager.getInstance().showDialog(mAddFriendDialog);
                 break;
             case R.id.btn_chat:
                 break;
@@ -195,10 +215,12 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                 if(TextUtils.isEmpty(msg)){
                     msg="加个好友把！";
                 }
-                DialogUtils.getInstance().hideDialog(mAddFriendDialog);
+                CloudManager.getInstance().sendTextMessage(msg,CloudManager.TYPE_ADD_FRIEND,objectId);
+                DialogManager.getInstance().hideDialog(mAddFriendDialog);
+                Toast.makeText(UserInfoActivity.this,"发送成功",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tv_cancel:
-                DialogUtils.getInstance().hideDialog(mAddFriendDialog);
+                DialogManager.getInstance().hideDialog(mAddFriendDialog);
                 break;
         }
     }

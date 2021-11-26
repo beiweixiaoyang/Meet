@@ -49,13 +49,6 @@ public class CloudManager {
         }
         return cloudManager;
     }
-    /**
-     * 初始化融云SDK
-     */
-    public void initCloud(Context context){
-        LogUtils.i("init-->Cloud");
-        RongIMClient.init(context, CloudManager.CLOUD_KEY, true);
-    }
 
     /**
      * 连接融云服务

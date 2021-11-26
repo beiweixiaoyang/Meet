@@ -1,6 +1,8 @@
 package com.example.meet.ui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -54,7 +56,6 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
     }
 
     private void initView() {
-        LogUtils.i("init-->AddFriendActivity");
         ll_to_contact=findViewById(R.id.ll_to_contact);
         et_phone=findViewById(R.id.et_phone);
         iv_search=findViewById(R.id.iv_search);
@@ -111,17 +112,6 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
             }
         });
         mSearchResultView.setAdapter(mCommonAdapter);
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.ll_to_contact:
-                break;
-            case R.id.iv_search:
-                queryPhoneUser();
-                break;
-        }
     }
 
     /**
@@ -206,5 +196,38 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
         model.setType(TYPE_TITLE);
         model.setTitle(title);
         mLists.add(model);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.ll_to_contact:
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    requestRuntimePermissions(new String[]{Manifest.permission.READ_CONTACTS}, new OnPermissionListener() {
+                        @Override
+                        public void granted() {
+                            startActivity(new Intent(AddFriendActivity.this,ContactFriendActivity.class));
+                        }
+
+                        @Override
+                        public void denied(List<String> deniedList) {
+                            for(String denied:deniedList){
+                                if(denied.equals("android.permission.READ_CONTACTS")){
+                                    Toast.makeText(AddFriendActivity.this,
+                                            "打开失败，请检查读取联系人权限是否打开",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                    });
+                }else{
+                    startActivity(new Intent(AddFriendActivity.this,ContactFriendActivity.class));
+                }
+                break;
+            case R.id.iv_search:
+                queryPhoneUser();
+                break;
+        }
     }
 }
