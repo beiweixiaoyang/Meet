@@ -94,6 +94,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void checkToken() {
         LogUtils.i("checkToken");
+        createUploadDialog();
         //获取Token，需要三个参数：用户id，头像地址，昵称
         String token= SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
         LogUtils.i(token);
@@ -125,9 +126,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //        }
         //去融云后台获取Token，连接融云
         HashMap<String,String> map=new HashMap<>();
-        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
-        map.put("name", BmobManager.getInstance().getCurrentUser().getTokenNickName());
-        map.put("portraitUri", BmobManager.getInstance().getCurrentUser().getTokenPhoto());
+//        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
+//        map.put("name", BmobManager.getInstance().getCurrentUser().getTokenNickName());
+//        map.put("portraitUri", BmobManager.getInstance().getCurrentUser().getTokenPhoto());
+        map.put("userId","a636d908f5");
+        map.put("name", "蹋上丶光棍路");
+        map.put("portraitUri","http://b-ssl.duitang.com/uploads/item/201610/03/20161003201001_jGitY.jpeg");
         //通过OkHttp请求Token
         //线程调度
         disposable = Observable.create((ObservableOnSubscribe<String>) emitter -> {

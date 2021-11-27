@@ -57,7 +57,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/ll_mo_info"
+                android:id="@+id/ll_me_info"
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
                 android:layout_height="50dp"

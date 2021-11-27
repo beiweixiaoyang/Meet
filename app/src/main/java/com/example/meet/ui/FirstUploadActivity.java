@@ -73,6 +73,7 @@ public class FirstUploadActivity extends BaseBackActivity implements View.OnClic
         btn_upload.setOnClickListener(this);
         iv_photo.setOnClickListener(this);
         initSelectPhotoView();
+        btn_upload.setEnabled(false);
     }
 
     /**
@@ -97,7 +98,9 @@ public class FirstUploadActivity extends BaseBackActivity implements View.OnClic
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(charSequence.length() > 0){
-                    btn_upload.setEnabled(uploadFile != null);
+                    LogUtils.e(String.valueOf(uploadFile == null));
+                    btn_upload.setEnabled(true);
+//                    btn_upload.setEnabled(uploadFile != null);
                 }else{
                     btn_upload.setEnabled(false);
                 }
@@ -119,7 +122,7 @@ public class FirstUploadActivity extends BaseBackActivity implements View.OnClic
             case R.id.tv_camera:
                 DialogManager.getInstance().hideDialog(mSelectPhotoDialog);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestRuntimePermissions(ALBUM, new OnPermissionListener() {
+                    requestRuntimePermissions(CAMERA, new OnPermissionListener() {
                         @Override
                         public void granted() {
                             FileUtil.getInstance().toCamera(FirstUploadActivity.this);
@@ -147,7 +150,7 @@ public class FirstUploadActivity extends BaseBackActivity implements View.OnClic
             case R.id.tv_album:
                 DialogManager.getInstance().hideDialog(mSelectPhotoDialog);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestRuntimePermissions(CAMERA, new OnPermissionListener() {
+                    requestRuntimePermissions(ALBUM, new OnPermissionListener() {
                         @Override
                         public void granted() {
                             FileUtil.getInstance().toAlbum(FirstUploadActivity.this);

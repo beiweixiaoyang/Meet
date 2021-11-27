@@ -64,6 +64,7 @@ public class IndexActivity extends BaseUIActivity {
         }else{
             String token=SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
             if(TextUtils.isEmpty(token)){
+                LogUtils.i(token);
                 //token为空，进入下一个判断
                 if(BmobManager.getInstance().isLogin()){
                     intent.setClass(this, MainActivity.class);
