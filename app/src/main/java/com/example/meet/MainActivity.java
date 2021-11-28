@@ -94,15 +94,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void checkToken() {
         LogUtils.i("checkToken");
-        createUploadDialog();
         //获取Token，需要三个参数：用户id，头像地址，昵称
         String token= SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
-        LogUtils.i(token);
         if(TextUtils.isEmpty(token)){
 //            String tokenPhoto= BmobManager.getInstance().getCurrentUser().getTokenPhoto();
 //            String tokenNickname=BmobManager.getInstance().getCurrentUser().getTokenNickName();
             String tokenPhoto="http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg";
-            String tokenNickname="拨打寂寞专线";
+            String tokenNickname="卑微小杨";
             if(TextUtils.isEmpty(tokenPhoto) && TextUtils.isEmpty(tokenNickname)){
                 createUploadDialog();
             }else{
@@ -120,18 +118,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void createToken() {
         LogUtils.i("createToken");
         //判断当前是否有用户处于登陆状态
-//        if( BmobManager.getInstance().getCurrentUser() == null){
-//            Toast.makeText(this, "登录异常", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
+        if( BmobManager.getInstance().getCurrentUser() == null){
+            Toast.makeText(this, "登录异常", Toast.LENGTH_SHORT).show();
+            return;
+        }
         //去融云后台获取Token，连接融云
         HashMap<String,String> map=new HashMap<>();
-//        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
+        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
 //        map.put("name", BmobManager.getInstance().getCurrentUser().getTokenNickName());
 //        map.put("portraitUri", BmobManager.getInstance().getCurrentUser().getTokenPhoto());
-        map.put("userId","a636d908f5");
-        map.put("name", "蹋上丶光棍路");
-        map.put("portraitUri","http://b-ssl.duitang.com/uploads/item/201610/03/20161003201001_jGitY.jpeg");
+        map.put("name","卑微小杨");
+        map.put("portraitUri","http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg");
         //通过OkHttp请求Token
         //线程调度
         disposable = Observable.create((ObservableOnSubscribe<String>) emitter -> {

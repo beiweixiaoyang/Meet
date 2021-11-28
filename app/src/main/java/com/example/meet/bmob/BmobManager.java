@@ -6,6 +6,7 @@ import com.example.meet.model.Friend;
 import com.example.meet.utils.LogUtils;
 
 import java.io.File;
+import java.util.List;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
@@ -16,6 +17,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.QueryListener;
+import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
@@ -165,6 +167,36 @@ public class BmobManager {
                 }else{
                     listener.onUploadFailed(e);
                     LogUtils.e("上传失败："+e.toString());
+                }
+            }
+        });
+    }
+
+    /**
+     * 添加好友到自己的好友列表
+     * @param meetUser
+     */
+    public void addFriend(MeetUser meetUser, SaveListener<String>listener){
+        Friend friend=new Friend();
+        friend.setMeetUser(getCurrentUser());
+        friend.setFriendUser(meetUser);
+        friend.save(listener);
+    }
+
+    /**
+     * 通过objectId添加到好友列表中
+     * @param objectId
+     * @param listener
+     */
+    public void addFriend(String objectId,SaveListener<String> listener){
+        queryByObjectId(objectId, new FindListener<MeetUser>() {
+            @Override
+            public void done(List<MeetUser> list, BmobException e) {
+                if(e == null){
+                    if(list.size() > 0){
+                        MeetUser meetUser = list.get(0);
+                        addFriend(meetUser,listener);
+                    }
                 }
             }
         });

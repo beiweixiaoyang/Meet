@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.example.meet.utils.LogUtils;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import io.rong.imlib.IRongCallback;
@@ -50,6 +52,10 @@ public class CloudManager {
         return cloudManager;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void initCloud(Context context){
+        RongIMClient.init(context,CloudManager.CLOUD_KEY);
+    }
     /**
      * 连接融云服务
      * @param token token

@@ -3,13 +3,30 @@ package com.example.meet.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.view.View;
 
+import androidx.annotation.NonNull;
+
+import com.example.meet.bmob.BmobManager;
 import com.example.meet.cloud.CloudManager;
 import com.example.meet.gson.TextBean;
+import com.example.meet.litepal.LitePalManager;
+import com.example.meet.litepal.NewFriend;
 import com.example.meet.utils.LogUtils;
 import com.example.meet.utils.SpUtils;
 import com.google.gson.Gson;
 
+import java.util.List;
+
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
 import io.rong.message.TextMessage;
@@ -17,6 +34,8 @@ import io.rong.message.TextMessage;
 public class CloudService extends Service {
 
     private String token;
+    private Disposable disposable;
+
     public CloudService() {
     }
 
@@ -32,24 +51,60 @@ public class CloudService extends Service {
     private void linkCloudServer() {
         LogUtils.i("linkCloudServer");
         //获取Token
-        token= SpUtils.getInstance().getString("token","");
+        token = SpUtils.getInstance().getString("token", "");
         CloudManager.getInstance().connectCloud(token);
         CloudManager.getInstance().setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageWrapperListener() {
             @Override
             public boolean onReceived(Message message, int i, boolean b, boolean b1) {
-                String objectName=message.getObjectName();
+                String objectName = message.getObjectName();
                 //文本消息
-                if(objectName.equals(CloudManager.MESSAGE_TEXT_NAME)){
+                if (objectName.equals(CloudManager.MESSAGE_TEXT_NAME)) {
                     //获取消息主体
-                    TextMessage textMessage= (TextMessage) message.getContent();
+                    TextMessage textMessage = (TextMessage) message.getContent();
                     String content = textMessage.getContent();
                     TextBean textBean = new Gson().fromJson(content, TextBean.class);
-                    if(textBean.getType().equals(CloudManager.TYPE_TEXT)){
+                    if (textBean.getType().equals(CloudManager.TYPE_TEXT)) {
                         //普通文本消息
-                    }else if(textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)){
-                        //添加好友消息,存储到本地·数据库中·
-                    }else if(textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)){
-                        //同意好友消息
+                    } else if (textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)) {
+                        //查询本地数据库，如果有重复的则不添加
+                        disposable = Observable.create(new ObservableOnSubscribe<List<NewFriend>>() {
+                            @Override
+                            public void subscribe(@NonNull ObservableEmitter<List<NewFriend>> emitter) throws Exception {
+                                emitter.onNext(LitePalManager.getInstance().queryNewFriend());
+                                emitter.onComplete();
+                            }
+                        }).subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<List<NewFriend>>() {
+                                    @Override
+                                    public void accept(List<NewFriend> newFriends) throws Exception {
+                                        if (newFriends.size() > 0) {
+                                            boolean isHave = false;
+                                            for (int i = 0; i < newFriends.size(); i++) {
+                                                if (message.getSenderUserId() == newFriends.get(i).getUserId()) {
+                                                    isHave = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (!isHave) {
+                                                //添加好友消息,存储到本地数据库中(只添加不重复的)
+                                                LitePalManager.getInstance().
+                                                        saveNewFriend(textBean.getMsg(), message.getSenderUserId());
+                                            }
+                                        }
+                                    }
+                                });
+                    } else if (textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)) {
+                        //同意添加好友消息
+                        BmobManager.getInstance().addFriend(message.getSenderUserId(), new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                if(e == null){
+                                    //刷新好友列表
+                                    LogUtils.i(s);
+                                }
+                            }
+                        });
                     }
                 }
                 return false;
@@ -60,5 +115,13 @@ public class CloudService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(disposable.isDisposed()){
+            disposable.dispose();
+        }
     }
 }

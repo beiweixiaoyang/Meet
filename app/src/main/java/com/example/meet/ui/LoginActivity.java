@@ -57,6 +57,7 @@ public class LoginActivity extends BaseUIActivity implements View.OnClickListene
                 case HANDLER_TIME:
                     TIME -- ;
                     btn_send_code.setText(TIME+"s"+"后重新发送");
+                    btn_send_code.setEnabled(false);
                     if(TIME >0){
                         mHandler.sendEmptyMessageDelayed(HANDLER_TIME,1000);
                     }else{

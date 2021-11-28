@@ -66,12 +66,12 @@ public class IndexActivity extends BaseUIActivity {
             if(TextUtils.isEmpty(token)){
                 LogUtils.i(token);
                 //token为空，进入下一个判断
+                LogUtils.e(String.valueOf(BmobManager.getInstance().isLogin()));
                 if(BmobManager.getInstance().isLogin()){
                     intent.setClass(this, MainActivity.class);
                 }else{
                     intent.setClass(this,LoginActivity.class);
                 }
-                intent.setClass(this,LoginActivity.class);
             }else{
                 intent.setClass(this, MainActivity.class);
             }

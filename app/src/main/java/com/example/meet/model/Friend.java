@@ -2,9 +2,16 @@ package com.example.meet.model;
 
 import com.example.meet.bmob.MeetUser;
 
-public class Friend {
+import cn.bmob.v3.BmobObject;
 
+/**
+ * 好友类
+ */
+public class Friend extends BmobObject {
+
+    //本身
     private MeetUser meetUser;
+    //好友
     private MeetUser FriendUser;
 
     public MeetUser getMeetUser() {

@@ -23,7 +23,8 @@
         android:theme="@style/Theme.Meet">
         <activity
             android:name=".ui.NewFriendActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="好友申请"/>
         <activity
             android:name=".ui.ContactFriendActivity"
             android:exported="false"
@@ -53,7 +54,7 @@
             android:value="portrait|landscape" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.IndexActivity"
             android:exported="true"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
@@ -67,7 +68,7 @@
             android:exported="false"
             android:theme="@style/AppThemeFullScreen" />
         <activity
-            android:name=".ui.IndexActivity"
+            android:name=".MainActivity"
             android:exported="false"
             android:theme="@style/AppThemeFullScreen" />
         <activity

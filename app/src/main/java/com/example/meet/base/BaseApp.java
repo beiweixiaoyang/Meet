@@ -6,6 +6,10 @@ import com.example.meet.bmob.BmobManager;
 import com.example.meet.cloud.CloudManager;
 import com.example.meet.utils.SpUtils;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.litepal.LitePal;
+
 import io.rong.imlib.RongIMClient;
 
 /**
@@ -17,6 +21,7 @@ public class BaseApp extends Application {
         super.onCreate();
         SpUtils.getInstance().initSpUtils(this);
         BmobManager.getInstance().initBmob(this);
-        RongIMClient.init(this, CloudManager.CLOUD_KEY);
+        CloudManager.getInstance().initCloud(this);
+        LitePal.initialize(this);
     }
 }
