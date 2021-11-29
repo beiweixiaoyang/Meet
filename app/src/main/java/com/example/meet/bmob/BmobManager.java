@@ -130,7 +130,7 @@ public class BmobManager {
      */
     public void queryMyFriend(FindListener<Friend>listener){
         BmobQuery<Friend> query = new BmobQuery<>();
-        query.addWhereEqualTo("user", getCurrentUser());
+        query.addQueryKeys("FriendUser");
         query.findObjects(listener);
     }
 

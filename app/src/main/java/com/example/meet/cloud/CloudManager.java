@@ -8,6 +8,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
@@ -155,6 +157,14 @@ public class CloudManager {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 查询本地会话记录
+     * @param callback 回调函数
+     */
+    public void getConversationList(RongIMClient.ResultCallback<List<Conversation>> callback){
+        RongIMClient.getInstance().getConversationList(callback);
     }
 
 }

@@ -67,33 +67,8 @@ public class CloudService extends Service {
                         //普通文本消息
                     } else if (textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)) {
                         //查询本地数据库，如果有重复的则不添加
-                        disposable = Observable.create(new ObservableOnSubscribe<List<NewFriend>>() {
-                            @Override
-                            public void subscribe(@NonNull ObservableEmitter<List<NewFriend>> emitter) throws Exception {
-                                emitter.onNext(LitePalManager.getInstance().queryNewFriend());
-                                emitter.onComplete();
-                            }
-                        }).subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<List<NewFriend>>() {
-                                    @Override
-                                    public void accept(List<NewFriend> newFriends) throws Exception {
-                                        if (newFriends.size() > 0) {
-                                            boolean isHave = false;
-                                            for (int i = 0; i < newFriends.size(); i++) {
-                                                if (message.getSenderUserId() == newFriends.get(i).getUserId()) {
-                                                    isHave = true;
-                                                    break;
-                                                }
-                                            }
-                                            if (!isHave) {
-                                                //添加好友消息,存储到本地数据库中(只添加不重复的)
-                                                LitePalManager.getInstance().
-                                                        saveNewFriend(textBean.getMsg(), message.getSenderUserId());
-                                            }
-                                        }
-                                    }
-                                });
+                        LitePalManager.getInstance().
+                                saveNewFriend(textBean.getMsg(), message.getSenderUserId());
                     } else if (textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)) {
                         //同意添加好友消息
                         BmobManager.getInstance().addFriend(message.getSenderUserId(), new SaveListener<String>() {

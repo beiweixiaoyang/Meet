@@ -22,9 +22,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Meet">
         <activity
+            android:name=".ui.ChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.NewFriendActivity"
             android:exported="false"
-            android:label="好友申请"/>
+            android:label="好友申请" />
         <activity
             android:name=".ui.ContactFriendActivity"
             android:exported="false"

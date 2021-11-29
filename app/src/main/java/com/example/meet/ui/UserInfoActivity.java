@@ -37,6 +37,7 @@ import cn.bmob.v3.listener.FindListener;
 public class UserInfoActivity extends BaseUIActivity implements View.OnClickListener {
 
     private String objectId;
+    private MeetUser meetUser;
 
     private RelativeLayout ll_back;
     private LinearLayout ll_isFriend;
@@ -113,7 +114,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                 if (e == null) {
                     LogUtils.i("查询用户信息成功");
                     if (list.size() != 0) {
-                        MeetUser meetUser = list.get(0);
+                        meetUser = list.get(0);
                         updateUserInfo(meetUser);
                     }
                 } else {
@@ -202,6 +203,8 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                 DialogManager.getInstance().showDialog(mAddFriendDialog);
                 break;
             case R.id.btn_chat:
+                ChatActivity.startActivity(UserInfoActivity.this,meetUser.getObjectId(),
+                        meetUser.getNickName(),meetUser.getPhoto());
                 break;
             case R.id.btn_video_chat:
                 break;

@@ -11,5 +11,9 @@ public class Constants {
     //手机号码
     public static final String SP_PHONE="phone";
     //用户id
-    public static final String INTENT_USER_ID="intent_user_id";
+    public static final String INTENT_USER_ID="objectId";
+    //nickname
+    public static final String INTENT_USER_NICKNAME="userName";
+    //头像
+    public static final String INTENT_USER_PHOTO="userPhoto";
 }

@@ -18,6 +18,7 @@ import com.example.meet.base.BaseBackActivity;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
 import com.example.meet.cloud.CloudManager;
+import com.example.meet.event.EventManager;
 import com.example.meet.litepal.LitePalManager;
 import com.example.meet.litepal.NewFriend;
 import com.example.meet.utils.LogUtils;
@@ -108,7 +109,9 @@ public class NewFriendActivity extends BaseBackActivity implements View.OnClickL
                          * 5.刷新好友列表
                          */
                         updateItem(position,0);
-                        BmobManager.getInstance().addFriend(meetUser, new SaveListener<String>() {
+                        MeetUser friendUser = new MeetUser();
+                        friendUser.setObjectId(model.getUserId());
+                        BmobManager.getInstance().addFriend(friendUser, new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
                                 if(e == null){
@@ -116,6 +119,7 @@ public class NewFriendActivity extends BaseBackActivity implements View.OnClickL
                                     CloudManager.getInstance().sendTextMessage("",CloudManager.TYPE_ARGEED_FRIEND
                                     ,meetUser.getObjectId());
                                     //刷新好友列表
+                                    EventManager.post(EventManager.FLAG_UPDATE_FRIEND_LIST);
                                 }
                             }
                         });
