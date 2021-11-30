@@ -21,6 +21,7 @@ import com.example.meet.bmob.MeetUser;
 import com.example.meet.cloud.CloudManager;
 import com.example.meet.gson.TextBean;
 import com.example.meet.model.ChatRecordModel;
+import com.example.meet.ui.ChatActivity;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -74,7 +75,7 @@ public class ChatRecordFragment extends Fragment implements SwipeRefreshLayout.O
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        ChatActivity.startActivity(getActivity(),model.getUserId(),model.getNickName(),model.getUrl());
                     }
                 });
             }
@@ -165,6 +166,14 @@ public class ChatRecordFragment extends Fragment implements SwipeRefreshLayout.O
 
     @Override
     public void onRefresh() {
+        if (mChatRecordRefreshLayout.isRefreshing()) {
+            queryChatRecord();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (mChatRecordRefreshLayout.isRefreshing()) {
             queryChatRecord();
         }

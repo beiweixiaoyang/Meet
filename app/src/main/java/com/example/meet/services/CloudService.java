@@ -3,12 +3,15 @@ package com.example.meet.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.cloud.CloudManager;
+import com.example.meet.event.EventManager;
+import com.example.meet.event.MessageEvent;
 import com.example.meet.gson.TextBean;
 import com.example.meet.litepal.LitePalManager;
 import com.example.meet.litepal.NewFriend;
@@ -29,6 +32,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 
 public class CloudService extends Service {
@@ -65,6 +69,10 @@ public class CloudService extends Service {
                     TextBean textBean = new Gson().fromJson(content, TextBean.class);
                     if (textBean.getType().equals(CloudManager.TYPE_TEXT)) {
                         //普通文本消息
+                        MessageEvent event=new MessageEvent(EventManager.FLAG_SEND_TEXT);
+                        event.setUserId(message.getSenderUserId());
+                        event.setText(textBean.getMsg());
+                        EventManager.post(event);
                     } else if (textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)) {
                         //查询本地数据库，如果有重复的则不添加
                         LitePalManager.getInstance().
@@ -80,6 +88,15 @@ public class CloudService extends Service {
                                 }
                             }
                         });
+                    }
+                }else if(objectName.equals(CloudManager.MESSAGE_IMAGE_NAME)){
+                    ImageMessage imageMessage= (ImageMessage) message.getContent();
+                    String url = imageMessage.getRemoteUri().toString();
+                    if (!TextUtils.isEmpty(url)) {
+                        MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_IMAGE);
+                        event.setImgUrl(url);
+                        event.setUserId(message.getSenderUserId());
+                        EventManager.post(event);
                     }
                 }
                 return false;

@@ -125,10 +125,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         //去融云后台获取Token，连接融云
         HashMap<String,String> map=new HashMap<>();
-//        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
+
 //        map.put("portraitUri", BmobManager.getInstance().getCurrentUser().getTokenPhoto());
 //        map.put("name", BmobManager.getInstance().getCurrentUser().getTokenNickName());
-        map.put("userId","6015b1078c");
+        map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
         map.put("name","啊哈哈哈");
         map.put("portraitUri","http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg");
         //通过OkHttp请求Token

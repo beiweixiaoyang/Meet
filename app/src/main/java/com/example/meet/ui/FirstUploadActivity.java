@@ -161,7 +161,7 @@ public class FirstUploadActivity extends BaseBackActivity implements View.OnClic
                             for(String denied:deniedList){
                                 if(denied.equals("android.permission.READ_EXTERNAL_STORAGE")){
                                     Toast.makeText(FirstUploadActivity.this,
-                                            "打开失败，请检查相机权限是否打开",
+                                            "打开失败，请检查读写权限是否打开",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -202,22 +202,19 @@ public class FirstUploadActivity extends BaseBackActivity implements View.OnClic
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            switch (requestCode){
-                case 1001:
-                    uploadFile = FileUtil.getInstance().getTempFile();
-                    break;
-                case 1111:
-                    Uri uri = data.getData();
-                    if (uri != null) {
-                        LogUtils.i("path:" + uri.getPath());
-                        String realPathFromUri =
-                                FileUtil.getInstance().getRealPathFromUri(this, uri);
-                        if (!TextUtils.isEmpty(realPathFromUri)) {
-                            LogUtils.i("realpath:" + realPathFromUri);
-                            uploadFile = new File(realPathFromUri);
-                        }
+            if(requestCode == FileUtil.CAMERA_REQUEST_CODE){
+                uploadFile = FileUtil.getInstance().getTempFile();
+            }else if(requestCode == FileUtil.ALBUM_REQUEST_CODE){
+                Uri uri = data.getData();
+                if (uri != null) {
+                    LogUtils.i("path:" + uri.getPath());
+                    String realPathFromUri =
+                            FileUtil.getInstance().getRealPathFromUri(this, uri);
+                    if (!TextUtils.isEmpty(realPathFromUri)) {
+                        LogUtils.i("realpath:" + realPathFromUri);
+                        uploadFile = new File(realPathFromUri);
                     }
-                    break;
+                }
             }
         }
         //设置头像

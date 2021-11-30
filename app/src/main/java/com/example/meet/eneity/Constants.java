@@ -16,4 +16,6 @@ public class Constants {
     public static final String INTENT_USER_NICKNAME="userName";
     //头像
     public static final String INTENT_USER_PHOTO="userPhoto";
+    //图片路径
+    public static final String INTENT_IMAGE_PATH="imagePath";
 }

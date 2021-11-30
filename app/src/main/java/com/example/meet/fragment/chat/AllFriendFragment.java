@@ -96,7 +96,12 @@ public class AllFriendFragment extends Fragment implements SwipeRefreshLayout.On
             @Override
             public void done(List<Friend> list, BmobException e) {
                 mAllFriendRefreshLayout.setRefreshing(false);
-                LogUtils.e(String.valueOf(list.size()));
+                String myObjectId=BmobManager.getInstance().getCurrentUser().getObjectId();
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getFriendUser().getObjectId().equals(myObjectId)){
+                        list.remove(i);
+                    }
+                }
                 if(e == null){
                     if(list.size() > 0){
                         empty_view.setVisibility(View.GONE);
@@ -106,7 +111,6 @@ public class AllFriendFragment extends Fragment implements SwipeRefreshLayout.On
                         }
                         for (int i = 0; i < list.size(); i++) {
                             String objectId = list.get(i).getFriendUser().getObjectId();
-                            LogUtils.i(objectId);
                             BmobManager.getInstance().queryByObjectId(objectId, new FindListener<MeetUser>() {
                                 @Override
                                 public void done(List<MeetUser> list, BmobException e) {

@@ -1,6 +1,7 @@
 package com.example.meet.cloud;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.example.meet.utils.LogUtils;
 
@@ -8,12 +9,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 
 /**
@@ -131,7 +134,7 @@ public class CloudManager {
      * @param msg 文本消息
      * @param targetId 目标id
      */
-    public void sendTextMessage(String msg,String targetId){
+    private void sendTextMessage(String msg,String targetId){
         TextMessage textMessage=TextMessage.obtain(msg);
         RongIMClient.getInstance().sendMessage(Conversation.ConversationType.PRIVATE,
                 targetId,
@@ -159,6 +162,41 @@ public class CloudManager {
         }
     }
 
+    private RongIMClient.SendImageMessageCallback messageCallback=new RongIMClient.SendImageMessageCallback() {
+        @Override
+        public void onAttached(Message message) {
+
+        }
+
+        @Override
+        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+
+        }
+
+        @Override
+        public void onSuccess(Message message) {
+
+        }
+
+        @Override
+        public void onProgress(Message message, int i) {
+
+        }
+    };
+    /**
+     * 发送图片消息
+     * @param file 发送的文件
+     * @param targetId 目标id
+     */
+    public void sendImageMessage(File file,String targetId){
+        ImageMessage imageMessage = ImageMessage.obtain(Uri.fromFile(file),Uri.fromFile(file));
+        RongIMClient.getInstance().sendImageMessage(Conversation.ConversationType.PRIVATE,
+                targetId,
+                imageMessage,
+                null,
+                null,messageCallback);
+    }
+
     /**
      * 查询本地会话记录
      * @param callback 回调函数
@@ -167,4 +205,23 @@ public class CloudManager {
         RongIMClient.getInstance().getConversationList(callback);
     }
 
+    /**
+     * 获取指定目标的会话记录
+     * @param targetId 目标id
+     * @param callback 回调
+     */
+    public void getHistoryMessages(String targetId,RongIMClient.ResultCallback<List<Message>> callback){
+        RongIMClient.getInstance().getHistoryMessages(Conversation.ConversationType.PRIVATE,targetId,
+                -1,1000,callback);
+    }
+
+    /**
+     * 获取服务器的历史记录
+     * @param targetId
+     * @param callback
+     */
+    public void getRemoteHistoryMessages(String targetId,RongIMClient.ResultCallback<List<Message>> callback){
+        RongIMClient.getInstance().getRemoteHistoryMessages(Conversation.ConversationType.PRIVATE,targetId,
+                0,20,callback);
+    }
 }

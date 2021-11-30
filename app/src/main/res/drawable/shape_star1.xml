@@ -16,6 +16,6 @@
         android:endColor="#FBB377"
         android:startColor="#FDA680" />
 
-    <corners android:radius="10dp" />
+    <corners android:radius="15dp" />
 
 </shape>
