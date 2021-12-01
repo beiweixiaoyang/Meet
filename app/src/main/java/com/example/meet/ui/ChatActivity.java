@@ -7,12 +7,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,6 +61,8 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
     public static final int TYPE_RIGHT_TEXT = 3;
     public static final int TYPE_RIGHT_IMAGE = 4;
     public static final int TYPE_RIGHT_LOCATION = 5;
+
+    private static final int LOCATION_REQUEST_CODE=1200;
 
     //权限
     private static final String [] PERMISSIONS=
@@ -377,30 +382,31 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 break;
             case R.id.ll_location:
                 //申请权限
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestRuntimePermissions(PERMISSIONS, new OnPermissionListener() {
-                        @Override
-                        public void granted() {
-
-                        }
-
-                        @Override
-                        public void denied(List<String> deniedList) {
-                            for(String denied:deniedList){
-                                if(denied.equals("android.permission.READ_PHONE_STATE")){
-                                    Toast.makeText(ChatActivity.this,
-                                            "打开失败，请检查读取手机状态权限是否打开",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                                if(denied.equals("android.permission.ACCESS_COARSE_LOCATION")){
-                                    Toast.makeText(ChatActivity.this,
-                                            "打开失败，请检查地理位置权限是否打开",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                    });
-                }
+                LocationActivity.startActivity(ChatActivity.this,true,0,0,"",LOCATION_REQUEST_CODE);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    requestRuntimePermissions(PERMISSIONS, new OnPermissionListener() {
+//                        @Override
+//                        public void granted() {
+//
+//                        }
+//
+//                        @Override
+//                        public void denied(List<String> deniedList) {
+//                            for(String denied:deniedList){
+//                                if(denied.equals("android.permission.READ_PHONE_STATE")){
+//                                    Toast.makeText(ChatActivity.this,
+//                                            "打开失败，请检查读取手机状态权限是否打开",
+//                                            Toast.LENGTH_SHORT).show();
+//                                }
+//                                if(denied.equals("android.permission.ACCESS_COARSE_LOCATION")){
+//                                    Toast.makeText(ChatActivity.this,
+//                                            "打开失败，请检查地理位置权限是否打开",
+//                                            Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        }
+//                    });
+//                }
                 break;
         }
     }
@@ -436,6 +442,11 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         file = new File(realPathFromUri);
                     }
                 }
+            }else if(requestCode == LOCATION_REQUEST_CODE){
+                double la =data.getDoubleExtra("la",0);
+                double lo =data.getDoubleExtra("lo",0);
+                String address =data.getStringExtra("address");
+                LogUtils.e("la:"+la+'\n'+"lo:"+lo+'\n'+"address:"+address);
             }
             if (file != null){
                 CloudManager.getInstance().sendImageMessage(file, friendId);
@@ -443,5 +454,24 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 file = null;
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chat_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_chat_audio:
+                break;
+            case R.id.menu_chat_video:
+                break;
+            case R.id.menu_chat_menu:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

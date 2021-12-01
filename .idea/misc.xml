@@ -24,6 +24,7 @@
         <entry key="..\:/Android/Meet/app/src/main/res/layout/dialog_add_friend.xml" value="0.36614583333333334" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/dialog_code_view.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/dialog_loading.xml" value="0.36614583333333334" />
+        <entry key="..\:/Android/Meet/app/src/main/res/layout/dialog_select_constellation.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/dialog_select_photo.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/fragment_all_friend.xml" value="0.15307971014492755" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/fragment_all_record.xml" value="0.36614583333333334" />
@@ -38,6 +39,7 @@
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_chat_left_img.xml" value="0.20104166666666667" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_chat_record_item.xml" value="0.36614583333333334" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_empty_view.xml" value="0.17806484295845998" />
+        <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_me_age_item.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_pager_guide_1.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_pager_guide_2.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_pager_guide_3.xml" value="0.17806484295845998" />
@@ -45,6 +47,10 @@
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_search_user_item.xml" value="0.17806484295845998" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_stat_view_item.xml" value="0.36614583333333334" />
         <entry key="..\:/Android/Meet/app/src/main/res/layout/layout_tab_text.xml" value="0.36614583333333334" />
+        <entry key="..\:/Android/Meet/app/src/main/res/menu/chat_menu.xml" value="0.36614583333333334" />
+        <entry key="..\:/Android/Meet/app/src/main/res/menu/input_menu.xml" value="0.32222222222222224" />
+        <entry key="..\:/Android/Meet/app/src/main/res/menu/location_menu.xml" value="0.32222222222222224" />
+        <entry key="..\:/Android/Meet/app/src/main/res/menu/me_info_menu.xml" value="0.32222222222222224" />
         <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/activity_guide.xml" value="0.33" />
         <entry key="..\:/Pcakages/android/project/Meet/app/src/main/res/layout/activity_index.xml" value="0.25" />
       </map>
