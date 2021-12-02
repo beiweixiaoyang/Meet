@@ -100,8 +100,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if(TextUtils.isEmpty(token)){
 //            String tokenNickname=BmobManager.getInstance().getCurrentUser().getTokenNickName();
 //            String tokenPhoto= BmobManager.getInstance().getCurrentUser().getTokenPhoto();
-            String tokenPhoto="http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg";
-            String tokenNickname="啊哈哈哈";
+            String tokenPhoto="http://b-ssl.duitang.com/uploads/item/201802/25/20180225184943_ZRAdx.thumb.700_0.jpeg";
+            String tokenNickname="卑微小杨";
             if(TextUtils.isEmpty(tokenPhoto) && TextUtils.isEmpty(tokenNickname)){
                 createUploadDialog();
             }else{
@@ -130,7 +130,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //        map.put("name", BmobManager.getInstance().getCurrentUser().getTokenNickName());
         map.put("userId", BmobManager.getInstance().getCurrentUser().getObjectId());
         map.put("name","啊哈哈哈");
-        map.put("portraitUri","http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg");
+        map.put("portraitUri","http://b-ssl.duitang.com/uploads/item/201802/25/20180225184943_ZRAdx.thumb.700_0.jpeg");
         //通过OkHttp请求Token
         //线程调度
         disposable = Observable.create((ObservableOnSubscribe<String>) emitter -> {

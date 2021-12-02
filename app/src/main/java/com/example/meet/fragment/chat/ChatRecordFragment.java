@@ -88,7 +88,6 @@ public class ChatRecordFragment extends Fragment implements SwipeRefreshLayout.O
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.setAdapter(mCommonAdapter);
-        queryChatRecord();
     }
 
     /**
@@ -174,8 +173,6 @@ public class ChatRecordFragment extends Fragment implements SwipeRefreshLayout.O
     @Override
     public void onResume() {
         super.onResume();
-        if (mChatRecordRefreshLayout.isRefreshing()) {
-            queryChatRecord();
-        }
+        queryChatRecord();
     }
 }

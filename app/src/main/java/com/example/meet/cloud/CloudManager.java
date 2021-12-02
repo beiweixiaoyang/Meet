@@ -14,6 +14,7 @@ import java.util.List;
 
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.message.ImageMessage;
@@ -110,6 +111,28 @@ public class CloudManager {
         RongIMClient.setOnReceiveMessageListener(listener);
     }
 
+    private RongIMClient.SendImageMessageCallback messageCallback=new RongIMClient.SendImageMessageCallback() {
+        @Override
+        public void onAttached(Message message) {
+
+        }
+
+        @Override
+        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+
+        }
+
+        @Override
+        public void onSuccess(Message message) {
+
+        }
+
+        @Override
+        public void onProgress(Message message, int i) {
+
+        }
+    };
+
     private IRongCallback.ISendMessageCallback iSendMessageCallback=
             new IRongCallback.ISendMessageCallback() {
                 @Override
@@ -162,27 +185,7 @@ public class CloudManager {
         }
     }
 
-    private RongIMClient.SendImageMessageCallback messageCallback=new RongIMClient.SendImageMessageCallback() {
-        @Override
-        public void onAttached(Message message) {
 
-        }
-
-        @Override
-        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-
-        }
-
-        @Override
-        public void onSuccess(Message message) {
-
-        }
-
-        @Override
-        public void onProgress(Message message, int i) {
-
-        }
-    };
     /**
      * 发送图片消息
      * @param file 发送的文件
@@ -195,6 +198,12 @@ public class CloudManager {
                 imageMessage,
                 null,
                 null,messageCallback);
+    }
+
+    public void sendLocationMessage(String targetId,double lat,double lnt,String poi){
+        LocationMessage locationMessage=LocationMessage.obtain(lat,lnt,poi,null);
+        Message message=Message.obtain(targetId, Conversation.ConversationType.PRIVATE,locationMessage);
+        RongIMClient.getInstance().sendLocationMessage(message,null,null,iSendMessageCallback);
     }
 
     /**

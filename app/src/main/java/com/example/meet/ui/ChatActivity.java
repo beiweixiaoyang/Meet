@@ -30,6 +30,7 @@ import com.example.meet.eneity.Constants;
 import com.example.meet.event.EventManager;
 import com.example.meet.event.MessageEvent;
 import com.example.meet.gson.TextBean;
+import com.example.meet.manager.MapManager;
 import com.example.meet.model.ChatModel;
 import com.example.meet.utils.FileUtil;
 import com.example.meet.utils.LogUtils;
@@ -44,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.location.message.LocationMessage;
 import io.rong.imlib.model.Message;
 import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
@@ -188,7 +190,14 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                             addImage(1,url);
                         }
                     }
-                }else if(objectName.equals(CloudManager.MESSAGE_LOCATION_NAME)){}
+                }else if(objectName.equals(CloudManager.MESSAGE_LOCATION_NAME)){
+                    LocationMessage locationMessage= (LocationMessage) message.getContent();
+                    if(message.getSenderUserId().equals(friendId)){
+                        addLocation(0,locationMessage.getLat(),locationMessage.getLng(),locationMessage.getPoi());
+                    }else{
+                        addLocation(1,locationMessage.getLat(),locationMessage.getLng(),locationMessage.getPoi());
+                    }
+                }
             }
         }else{
             queryRemoteMessage();
@@ -227,10 +236,12 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
             public void onBindViewHolder(ChatModel model, CommonViewHolder holder, int type, int position) {
                 switch (type){
                     case TYPE_LEFT_TEXT:
+                        //文本内容
                         holder.setText(R.id.tv_left_text,model.getText());
                         holder.setImageUrl(ChatActivity.this,R.id.iv_left_photo,friendPhoto);
                         break;
                     case TYPE_LEFT_IMAGE:
+//                        图片消息
                         holder.setImageUrl(ChatActivity.this,R.id.iv_left_photo,friendPhoto);
                         holder.setImageUrl(ChatActivity.this,R.id.iv_left_img,model.getImgUrl());
                         holder.getView(R.id.iv_left_img).setOnClickListener(new View.OnClickListener() {
@@ -241,6 +252,17 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         });
                         break;
                     case TYPE_LEFT_LOCATION:
+                        //位置消息
+                        holder.setImageUrl(ChatActivity.this,R.id.iv_left_photo,friendPhoto);
+                        holder.setImageUrl(ChatActivity.this,R.id.iv_left_location_img,model.getMapUrl());
+                        holder.setText(R.id.tv_left_address, model.getAddress());
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                LocationActivity.startActivity(ChatActivity.this,false,
+                                        model.getLa(),model.getLo(),model.getAddress(),LOCATION_REQUEST_CODE);
+                            }
+                        });
                         break;
                     case TYPE_RIGHT_TEXT:
                         holder.setText(R.id.tv_right_text,model.getText());
@@ -267,6 +289,16 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         holder.setImageUrl(ChatActivity.this,R.id.iv_right_photo,myPhoto);
                         break;
                     case TYPE_RIGHT_LOCATION:
+                        holder.setImageUrl(ChatActivity.this,R.id.iv_right_photo,myPhoto);
+                        holder.setImageUrl(ChatActivity.this,R.id.iv_right_location_img,model.getMapUrl());
+                        holder.setText(R.id.tv_right_address, model.getAddress());
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                LocationActivity.startActivity(ChatActivity.this,false,
+                                        model.getLa(),model.getLo(),model.getAddress(),LOCATION_REQUEST_CODE);
+                            }
+                        });
                         break;
                 }
             }
@@ -358,6 +390,20 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         model.setLocalFile(file);
         baseAddItem(model);
     }
+
+    public void addLocation(int index,double la,double lo,String address){
+        ChatModel model=new ChatModel();
+        if(index == 0){
+            model.setType(TYPE_LEFT_LOCATION);
+        }else{
+            model.setType(TYPE_RIGHT_LOCATION);
+        }
+        model.setLa(la);
+        model.setLo(lo);
+        model.setAddress(address);
+        model.setMapUrl(MapManager.getInstance().getMapUrl(la,lo));
+        baseAddItem(model);
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -422,6 +468,9 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 break;
             case EventManager.FLAG_SEND_IMAGE:
                 addImage(0,messageEvent.getImgUrl());
+                break;
+            case EventManager.FLAG_SEND_LOCATION:
+                addLocation(0,messageEvent.getLa(),messageEvent.getLo(),messageEvent.getAddress());
         }
     }
 
@@ -447,6 +496,8 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 double lo =data.getDoubleExtra("lo",0);
                 String address =data.getStringExtra("address");
                 LogUtils.e("la:"+la+'\n'+"lo:"+lo+'\n'+"address:"+address);
+                CloudManager.getInstance().sendLocationMessage(friendId,la,lo,address);
+                addLocation(1,la,lo,address);
             }
             if (file != null){
                 CloudManager.getInstance().sendImageMessage(file, friendId);
