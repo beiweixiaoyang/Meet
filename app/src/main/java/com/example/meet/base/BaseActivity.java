@@ -1,5 +1,6 @@
 package com.example.meet.base;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -32,10 +33,10 @@ public class BaseActivity extends AppCompatActivity {
 
     private OnPermissionListener mListener;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowPermission(this);
         EventManager.register(this);
     }
 
@@ -51,7 +52,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 申请权限
+     * 在对应位置动态申请权限
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
     protected void requestRuntimePermissions(String[] permissions, OnPermissionListener listener) {
@@ -95,19 +96,16 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 判断窗口权限
+     * 申请窗口权限
      */
-    protected boolean checkWindowPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return Settings.canDrawOverlays(this);
+    protected void requestWindowPermission(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !Settings.canDrawOverlays(activity)) {
+            Toast.makeText(activity, "当前无权限，请授权", Toast.LENGTH_SHORT).show();
+            activity.startActivity(
+                    new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + activity.getPackageName())));
         }
-        return true;
-    }
-
-    protected void requestWindowPermission(int requestCode) {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION
-                , Uri.parse("package:" + getPackageName()));
-        startActivityForResult(intent, requestCode);
     }
 
     public interface OnPermissionListener {
@@ -115,5 +113,6 @@ public class BaseActivity extends AppCompatActivity {
 
         void denied(List<String> deniedList);
     }
+
 
 }

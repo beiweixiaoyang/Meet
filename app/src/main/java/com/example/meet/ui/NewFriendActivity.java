@@ -3,8 +3,6 @@ package com.example.meet.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -17,11 +15,9 @@ import com.example.meet.adapter.CommonViewHolder;
 import com.example.meet.base.BaseBackActivity;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
-import com.example.meet.cloud.CloudManager;
+import com.example.meet.manager.CloudManager;
 import com.example.meet.event.EventManager;
-import com.example.meet.litepal.LitePalManager;
-import com.example.meet.litepal.NewFriend;
-import com.example.meet.utils.LogUtils;
+import com.example.meet.manager.LitePalManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +44,10 @@ public class NewFriendActivity extends BaseBackActivity implements View.OnClickL
     private View empty_view;
     private Disposable disposable;
 
-    private List<NewFriend> mLists=new ArrayList<>();
+    private List<LitePalManager.NewFriend> mLists=new ArrayList<>();
     private List<MeetUser> mUserList = new ArrayList<>();
     private RecyclerView mNewFriendView;
-    private CommonAdapter<NewFriend> mCommonAdapter;
+    private CommonAdapter<LitePalManager.NewFriend> mCommonAdapter;
     private MeetUser meetUser;
 
     @Override
@@ -66,9 +62,9 @@ public class NewFriendActivity extends BaseBackActivity implements View.OnClickL
         mNewFriendView=findViewById(R.id.mNewFriendView);
         mNewFriendView.setLayoutManager(new LinearLayoutManager(this));
         mNewFriendView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mCommonAdapter=new CommonAdapter<NewFriend>(mLists, new CommonAdapter.OnBindDataListener<NewFriend>() {
+        mCommonAdapter=new CommonAdapter<LitePalManager.NewFriend>(mLists, new CommonAdapter.OnBindDataListener<LitePalManager.NewFriend>() {
             @Override
-            public void onBindViewHolder(NewFriend model, CommonViewHolder holder, int type, int position) {
+            public void onBindViewHolder(LitePalManager.NewFriend model, CommonViewHolder holder, int type, int position) {
                 //根据UserId查询用户信息
                 BmobManager.getInstance().queryByObjectId(model.getUserId(), new FindListener<MeetUser>() {
                     @Override
@@ -156,7 +152,7 @@ public class NewFriendActivity extends BaseBackActivity implements View.OnClickL
      * @param i 申请状态（-1，0，1）
      */
     private void updateItem(int position, int i) {
-        NewFriend newFriend = mLists.get(position);
+        LitePalManager.NewFriend newFriend = mLists.get(position);
         //更新数据库
         LitePalManager.getInstance().updateFriend(newFriend.getUserId(),i);
         //更新本地数据
@@ -167,17 +163,17 @@ public class NewFriendActivity extends BaseBackActivity implements View.OnClickL
 
     private void queryFriendApply() {
         //在子线程中获取好友申请列表，在主线程中更新UI(RxJava)
-        disposable= Observable.create(new ObservableOnSubscribe<List<NewFriend>>() {
+        disposable= Observable.create(new ObservableOnSubscribe<List<LitePalManager.NewFriend>>() {
             @Override
-            public void subscribe(@NonNull ObservableEmitter<List<NewFriend>> emitter) throws Exception {
+            public void subscribe(@NonNull ObservableEmitter<List<LitePalManager.NewFriend>> emitter) throws Exception {
                 emitter.onNext(LitePalManager.getInstance().queryNewFriend());
                 emitter.onComplete();
             }
         }).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<NewFriend>>() {
+                .subscribe(new Consumer<List<LitePalManager.NewFriend>>() {
                     @Override
-                    public void accept(List<NewFriend> newFriends) throws Exception {
+                    public void accept(List<LitePalManager.NewFriend> newFriends) throws Exception {
                         if(newFriends.size()> 0){
                             mLists.addAll(newFriends);
                         }else{

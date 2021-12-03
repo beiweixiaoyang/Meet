@@ -18,7 +18,7 @@ import com.example.meet.adapter.CommonAdapter;
 import com.example.meet.adapter.CommonViewHolder;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
-import com.example.meet.cloud.CloudManager;
+import com.example.meet.manager.CloudManager;
 import com.example.meet.gson.TextBean;
 import com.example.meet.model.ChatRecordModel;
 import com.example.meet.ui.ChatActivity;

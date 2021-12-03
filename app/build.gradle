@@ -59,4 +59,8 @@ dependencies {
     compile 'com.amap.api:search:latest.integration'
 
     api 'cn.rongcloud.sdk:im_lib:5.1.2'
+    implementation 'cn.rongcloud.sdk:call_lib:5.1.13' // 音视频呼叫能力库（内含 rtc_lib)
+    implementation 'cn.rongcloud.sdk:face_beautifier:5.1.13' // 美颜扩展库（可选）
+    implementation 'cn.rongcloud.sdk:player:5.1.13' // CDN 扩展库（可选）
+    implementation 'cn.rongcloud.sdk:voice_beautifier:5.1.13' // 音效扩展库（可选）
 }

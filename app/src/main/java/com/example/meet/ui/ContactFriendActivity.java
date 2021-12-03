@@ -116,7 +116,7 @@ public class ContactFriendActivity extends BaseBackActivity {
      * @param key 姓名
      * @param value  电话号码
      */
-    private void addContent(MeetUser meetUser,String key, String value) {
+    private void addContent(MeetUser meetUser, String key, String value) {
         AddFriendModel model=new AddFriendModel();
         model.setType(TYPE_CONTENT);
         model.setAge(meetUser.getAge());

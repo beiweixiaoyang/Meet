@@ -20,9 +20,7 @@ import com.example.meet.adapter.CommonViewHolder;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
 import com.example.meet.model.AllFriendModel;
-import com.example.meet.model.Friend;
 import com.example.meet.ui.UserInfoActivity;
-import com.example.meet.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +90,9 @@ public class AllFriendFragment extends Fragment implements SwipeRefreshLayout.On
      */
     private void queryMyFriends() {
         mAllFriendRefreshLayout.setRefreshing(true);
-        BmobManager.getInstance().queryMyFriend(new FindListener<Friend>() {
+        BmobManager.getInstance().queryMyFriend(new FindListener<BmobManager.Friend>() {
             @Override
-            public void done(List<Friend> list, BmobException e) {
+            public void done(List<BmobManager.Friend> list, BmobException e) {
                 mAllFriendRefreshLayout.setRefreshing(false);
                 String myObjectId=BmobManager.getInstance().getCurrentUser().getObjectId();
                 for (int i = 0; i < list.size(); i++) {

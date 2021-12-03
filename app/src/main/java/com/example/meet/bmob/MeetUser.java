@@ -2,10 +2,10 @@ package com.example.meet.bmob;
 
 import cn.bmob.v3.BmobUser;
 
-/**
- * App用户类继承自BmobUser
- */
-public class MeetUser extends BmobUser {
+public class MeetUser extends BmobUser{
+    /**
+     * App用户类继承自BmobUser
+     */
     //Token属性
 
     //获取Token的头像地址

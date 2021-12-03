@@ -2,13 +2,13 @@ package com.example.meet.bmob;
 
 import android.content.Context;
 
-import com.example.meet.model.Friend;
 import com.example.meet.utils.LogUtils;
 
 import java.io.File;
 import java.util.List;
 
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.BmobUser;
@@ -128,7 +128,7 @@ public class BmobManager {
     /**
      * 查询我的好友
      */
-    public void queryMyFriend(FindListener<Friend>listener){
+    public void queryMyFriend(FindListener<Friend> listener) {
         BmobQuery<Friend> query = new BmobQuery<>();
         query.addQueryKeys("FriendUser");
         query.findObjects(listener);
@@ -136,18 +136,17 @@ public class BmobManager {
 
 
     /**
-     *
      * @param nickname 昵称
-     * @param file 头像
+     * @param file     头像
      * @param listener 是否上传完成的监听
      */
-    public void uploadFile(String nickname, File file, OnUploadListener listener){
-        MeetUser meetUser=getCurrentUser();
-        BmobFile bmobFile=new BmobFile(file);
+    public void uploadFile(String nickname, File file, OnUploadListener listener) {
+        MeetUser meetUser = getCurrentUser();
+        BmobFile bmobFile = new BmobFile(file);
         bmobFile.uploadblock(new UploadFileListener() {
             @Override
             public void done(BmobException e) {
-                if(e == null){
+                if (e == null) {
                     meetUser.setNickName(nickname);
                     meetUser.setPhoto(bmobFile.getFileUrl());
                     meetUser.setTokenNickName(nickname);
@@ -156,17 +155,17 @@ public class BmobManager {
                     meetUser.update(new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
-                            if(e == null){
+                            if (e == null) {
                                 listener.onUploadDone();
-                            }else{
+                            } else {
                                 listener.onUploadFailed(e);
-                                LogUtils.e("上传失败："+e.toString());
+                                LogUtils.e("上传失败：" + e.toString());
                             }
                         }
                     });
-                }else{
+                } else {
                     listener.onUploadFailed(e);
-                    LogUtils.e("上传失败："+e.toString());
+                    LogUtils.e("上传失败：" + e.toString());
                 }
             }
         });
@@ -174,10 +173,11 @@ public class BmobManager {
 
     /**
      * 添加好友到自己的好友列表
+     *
      * @param meetUser
      */
-    public void addFriend(MeetUser meetUser, SaveListener<String>listener){
-        Friend friend=new Friend();
+    public void addFriend(MeetUser meetUser, SaveListener<String> listener) {
+        Friend friend = new Friend();
         friend.setMeetUser(getCurrentUser());
         friend.setFriendUser(meetUser);
         friend.save(listener);
@@ -185,25 +185,53 @@ public class BmobManager {
 
     /**
      * 通过objectId添加到好友列表中
+     *
      * @param objectId
      * @param listener
      */
-    public void addFriend(String objectId,SaveListener<String> listener){
+    public void addFriend(String objectId, SaveListener<String> listener) {
         queryByObjectId(objectId, new FindListener<MeetUser>() {
             @Override
             public void done(List<MeetUser> list, BmobException e) {
-                if(e == null){
-                    if(list.size() > 0){
+                if (e == null) {
+                    if (list.size() > 0) {
                         MeetUser meetUser = list.get(0);
-                        addFriend(meetUser,listener);
+                        addFriend(meetUser, listener);
                     }
                 }
             }
         });
     }
-    public interface OnUploadListener{
+
+    public interface OnUploadListener {
         void onUploadDone();
+
         void onUploadFailed(BmobException e);
     }
+    /**
+     * 好友类
+     */
+    public static class Friend extends BmobObject {
 
+        //本身
+        private MeetUser meetUser;
+        //好友
+        private MeetUser FriendUser;
+
+        public MeetUser getMeetUser() {
+            return meetUser;
+        }
+
+        public void setMeetUser(MeetUser meetUser) {
+            this.meetUser = meetUser;
+        }
+
+        public MeetUser getFriendUser() {
+            return FriendUser;
+        }
+
+        public void setFriendUser(MeetUser friendUser) {
+            FriendUser = friendUser;
+        }
+    }
 }

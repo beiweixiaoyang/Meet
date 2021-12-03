@@ -25,12 +25,13 @@ import com.example.meet.adapter.CommonAdapter;
 import com.example.meet.adapter.CommonViewHolder;
 import com.example.meet.base.BaseBackActivity;
 import com.example.meet.bmob.BmobManager;
-import com.example.meet.cloud.CloudManager;
+import com.example.meet.manager.CloudManager;
 import com.example.meet.eneity.Constants;
 import com.example.meet.event.EventManager;
 import com.example.meet.event.MessageEvent;
 import com.example.meet.gson.TextBean;
 import com.example.meet.manager.MapManager;
+import com.example.meet.manager.VoiceManager;
 import com.example.meet.model.ChatModel;
 import com.example.meet.utils.FileUtil;
 import com.example.meet.utils.LogUtils;
@@ -65,13 +66,19 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
     public static final int TYPE_RIGHT_LOCATION = 5;
 
     private static final int LOCATION_REQUEST_CODE=1200;
+    private static final int VOICE_REQUEST_CODE=1201;
 
-    //权限
-    private static final String [] PERMISSIONS=
+    //定位权限
+    private static final String [] LOCATION_PERMISSIONS =
             new String[]{Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION
             };
 
+    //录音权限
+    private static final String [] VOICE_PERMISSIONS=
+            new String[]{Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CHANGE_NETWORK_STATE,
+            Manifest.permission.ACCESS_FINE_LOCATION};
 
     /**
      * 外部通过startActivity跳转到聊天界面
@@ -419,6 +426,33 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 et_input_msg.setText("");
                 break;
             case R.id.ll_voice:
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    requestRuntimePermissions(VOICE_PERMISSIONS, new OnPermissionListener() {
+                        @Override
+                        public void granted() {
+                            et_input_msg.setText(VoiceManager.getInstance(ChatActivity.this).getSpeakText());
+                        }
+
+                        @Override
+                        public void denied(List<String> deniedList) {
+                            for(String denied:deniedList){
+                                if(denied.equals("android.permission.RECORD_AUDIO")){
+                                    Toast.makeText(ChatActivity.this,
+                                            "打开失败，请检查录音权限是否打开",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                if(denied.equals("android.permission.CHANGE_NETWORK_STATE")){
+                                    Toast.makeText(ChatActivity.this,
+                                            "打开失败，请检查改变网络状态权限是否打开",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                    });
+
+                }else{
+                    et_input_msg.setText(VoiceManager.getInstance(ChatActivity.this).getSpeakText());
+                }
                 break;
             case R.id.ll_camera:
                 FileUtil.getInstance().toCamera(ChatActivity.this);
@@ -428,31 +462,32 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 break;
             case R.id.ll_location:
                 //申请权限
-                LocationActivity.startActivity(ChatActivity.this,true,0,0,"",LOCATION_REQUEST_CODE);
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    requestRuntimePermissions(PERMISSIONS, new OnPermissionListener() {
-//                        @Override
-//                        public void granted() {
-//
-//                        }
-//
-//                        @Override
-//                        public void denied(List<String> deniedList) {
-//                            for(String denied:deniedList){
-//                                if(denied.equals("android.permission.READ_PHONE_STATE")){
-//                                    Toast.makeText(ChatActivity.this,
-//                                            "打开失败，请检查读取手机状态权限是否打开",
-//                                            Toast.LENGTH_SHORT).show();
-//                                }
-//                                if(denied.equals("android.permission.ACCESS_COARSE_LOCATION")){
-//                                    Toast.makeText(ChatActivity.this,
-//                                            "打开失败，请检查地理位置权限是否打开",
-//                                            Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        }
-//                    });
-//                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestRuntimePermissions(LOCATION_PERMISSIONS, new OnPermissionListener() {
+                        @Override
+                        public void granted() {
+                            LocationActivity.startActivity(ChatActivity.this,true,0,0,"",LOCATION_REQUEST_CODE);
+                        }
+
+                        @Override
+                        public void denied(List<String> deniedList) {
+                            for(String denied:deniedList){
+                                if(denied.equals("android.permission.READ_PHONE_STATE")){
+                                    Toast.makeText(ChatActivity.this,
+                                            "打开失败，请检查读取手机状态权限是否打开",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                if(denied.equals("android.permission.ACCESS_COARSE_LOCATION")){
+                                    Toast.makeText(ChatActivity.this,
+                                            "打开失败，请检查地理位置权限是否打开",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                    });
+                }else{
+                    LocationActivity.startActivity(ChatActivity.this,true,0,0,"",LOCATION_REQUEST_CODE);
+                }
                 break;
         }
     }

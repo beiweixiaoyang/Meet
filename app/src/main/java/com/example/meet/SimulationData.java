@@ -1,6 +1,7 @@
 package com.example.meet;
 
 
+import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
 import com.example.meet.utils.LogUtils;
 

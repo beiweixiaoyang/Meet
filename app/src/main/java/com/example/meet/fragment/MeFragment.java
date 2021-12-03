@@ -1,7 +1,6 @@
 package com.example.meet.fragment;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.meet.R;
-import com.example.meet.bmob.BmobManager;
 import com.example.meet.ui.NewFriendActivity;
-import com.example.meet.utils.LogUtils;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 

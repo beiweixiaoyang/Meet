@@ -2,18 +2,13 @@ package com.example.meet.base;
 
 import android.app.Application;
 
-import com.amap.api.maps.MapsInitializer;
-import com.amap.api.services.core.ServiceSettings;
 import com.example.meet.bmob.BmobManager;
-import com.example.meet.cloud.CloudManager;
+import com.example.meet.manager.CloudManager;
 import com.example.meet.manager.MapManager;
+import com.example.meet.manager.WindowHelper;
 import com.example.meet.utils.SpUtils;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.LitePal;
-
-import io.rong.imlib.RongIMClient;
 
 /**
  * 在BaseApp中做一些初始化工作
@@ -27,5 +22,6 @@ public class BaseApp extends Application {
         CloudManager.getInstance().initCloud(this);
         LitePal.initialize(this);
         MapManager.getInstance().initMap(this);
+        WindowHelper.getInstance().initWindow(this);
     }
 }

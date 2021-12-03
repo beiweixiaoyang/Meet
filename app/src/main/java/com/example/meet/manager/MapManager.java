@@ -75,7 +75,7 @@ public class MapManager {
         }
     };
     public void initMap(Context context) {
-        LogUtils.e("initMap");
+        LogUtils.i("initMap");
         //进行高德SDK隐私合规检查
         MapsInitializer.updatePrivacyShow(context, true, true);
         MapsInitializer.updatePrivacyAgree(context, true);
