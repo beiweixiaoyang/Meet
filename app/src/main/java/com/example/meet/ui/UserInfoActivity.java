@@ -211,10 +211,10 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                         meetUser.getNickName(), meetUser.getPhoto());
                 break;
             case R.id.btn_video_chat:
-                CloudManager.getInstance().startCall(objectId, RongCallCommon.CallMediaType.VIDEO);
+                CloudManager.getInstance().startCall(UserInfoActivity.this,objectId, RongCallCommon.CallMediaType.VIDEO);
                 break;
             case R.id.btn_audio_chat:
-                CloudManager.getInstance().startCall(objectId,RongCallCommon.CallMediaType.AUDIO);
+                CloudManager.getInstance().startCall(UserInfoActivity.this,objectId,RongCallCommon.CallMediaType.AUDIO);
                 break;
             case R.id.ll_back:
                 onBackPressed();

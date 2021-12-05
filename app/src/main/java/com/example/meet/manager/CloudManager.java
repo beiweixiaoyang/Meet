@@ -2,6 +2,7 @@ package com.example.meet.manager;
 
 import android.content.Context;
 import android.net.Uri;
+import android.widget.Toast;
 
 import com.example.meet.utils.LogUtils;
 
@@ -48,6 +49,11 @@ public class CloudManager {
     public static final String TYPE_ADD_FRIEND = "TYPE_ADD_FRIEND";
     //同意添加好友的消息
     public static final String TYPE_ARGEED_FRIEND = "TYPE_ARGEED_FRIEND";
+
+    //来电铃声
+    public static final String callAudioPath = "http://downsc.chinaz.net/Files/DownLoad/sound1/201501/5363.wav";
+    //挂断铃声
+    public static final String callAudioHangup = "http://downsc.chinaz.net/Files/DownLoad/sound1/201501/5351.wav";
 
 
     private volatile static CloudManager cloudManager;
@@ -263,7 +269,11 @@ public class CloudManager {
      * @param targetId 目标id
      * @param mediaType 电话类型 （AUDIO：0，VIDEO：1）
      */
-    public void startCall(String targetId, RongCallCommon.CallMediaType mediaType) {
+    public void startCall(Context context,String targetId, RongCallCommon.CallMediaType mediaType) {
+        //检查设备是否可用
+        if(!isVoIPEnabled(context)){
+            return;
+        }
         List<String> usersId = new ArrayList<>();
         usersId.add(targetId);
         RongCallClient.getInstance().startCall(Conversation.ConversationType.PRIVATE,
@@ -340,5 +350,19 @@ public class CloudManager {
     public void setEnableSpeakerphone(boolean enabled) {
         RongCallClient.getInstance().setEnableSpeakerphone(enabled);
     }
+
+    /**
+     * 检查设备是否可用通话
+     *
+     * @param mContext
+     */
+    public boolean isVoIPEnabled(Context mContext) {
+        if (!RongCallClient.getInstance().isVoIPEnabled(mContext)) {
+            Toast.makeText(mContext, "设备不支持音视频通话", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
 
 }
