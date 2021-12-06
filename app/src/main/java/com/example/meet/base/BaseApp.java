@@ -7,6 +7,7 @@ import com.example.meet.manager.CloudManager;
 import com.example.meet.manager.MapManager;
 import com.example.meet.manager.WindowHelper;
 import com.example.meet.utils.SpUtils;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
 import org.litepal.LitePal;
 
@@ -23,5 +24,6 @@ public class BaseApp extends Application {
         LitePal.initialize(this);
         MapManager.getInstance().initMap(this);
         WindowHelper.getInstance().initWindow(this);
+        ZXingLibrary.initDisplayOpinion(this);//初始化二维码
     }
 }

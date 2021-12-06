@@ -134,6 +134,14 @@ public class BmobManager {
         query.findObjects(listener);
     }
 
+    /**
+     * 查询私有库
+     * @param listener
+     */
+    public void queryPrivateSet(FindListener<PrivateSet> listener){
+        BmobQuery<PrivateSet> query = new BmobQuery<>();
+        query.findObjects(listener);
+    }
 
     /**
      * @param nickname 昵称
@@ -203,35 +211,25 @@ public class BmobManager {
         });
     }
 
+    /**
+     * 添加自身到私有库
+     */
+    public void addPrivateSet(SaveListener<String> listener){
+        PrivateSet privateSet=new PrivateSet();
+        privateSet.setObjectId(getCurrentUser().getObjectId());
+        privateSet.setPhone(getCurrentUser().getMobilePhoneNumber());
+        privateSet.save(listener);
+    }
+
+    public void delPrivateSet(String objectId,UpdateListener listener){
+        PrivateSet set = new PrivateSet();
+        set.setObjectId(objectId);
+        set.delete(listener);
+    }
+
     public interface OnUploadListener {
         void onUploadDone();
 
         void onUploadFailed(BmobException e);
-    }
-    /**
-     * 好友类
-     */
-    public static class Friend extends BmobObject {
-
-        //本身
-        private MeetUser meetUser;
-        //好友
-        private MeetUser FriendUser;
-
-        public MeetUser getMeetUser() {
-            return meetUser;
-        }
-
-        public void setMeetUser(MeetUser meetUser) {
-            this.meetUser = meetUser;
-        }
-
-        public MeetUser getFriendUser() {
-            return FriendUser;
-        }
-
-        public void setFriendUser(MeetUser friendUser) {
-            FriendUser = friendUser;
-        }
     }
 }

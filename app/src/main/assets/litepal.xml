@@ -32,7 +32,7 @@
     	</list>
     -->
     <list>
-        <mapping class="com.example.meet.manager.LitePalManager.NewFriend" />
+        <mapping class="com.example.meet.litepal.NewFriend" />
     </list>
 
     <!--

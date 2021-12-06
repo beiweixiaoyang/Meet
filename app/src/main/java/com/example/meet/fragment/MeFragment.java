@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.meet.R;
 import com.example.meet.ui.NewFriendActivity;
+import com.example.meet.ui.PrivateSetActivity;
+import com.example.meet.ui.ShareImageActivity;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -75,8 +77,10 @@ public class MeFragment extends Fragment implements View.OnClickListener{
                 startActivity(new Intent(getContext(), NewFriendActivity.class));
                 break;
             case R.id.ll_private_set:
+                startActivity(new Intent(getContext(), PrivateSetActivity.class));
                 break;
             case R.id.ll_share:
+                startActivity(new Intent(getContext(), ShareImageActivity.class));
                 break;
             case R.id.ll_setting:
                 break;

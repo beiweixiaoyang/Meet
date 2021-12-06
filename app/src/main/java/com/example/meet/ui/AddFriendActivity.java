@@ -156,8 +156,7 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
             @Override
             public void done(List<MeetUser> list, BmobException e) {
                 if(e == null){
-                    LogUtils.i("查询所有好友成功");
-                    if(list.size() != 0){
+                    if(list.size() > 0){
                         addTitle("推荐好友");
                         int number=list.size()>100?100:list.size();
                         for (int i = 0; i < number; i++) {
@@ -165,8 +164,6 @@ public class AddFriendActivity extends BaseBackActivity implements View.OnClickL
                         }
                         mCommonAdapter.notifyDataSetChanged();
                     }
-                }else{
-                    LogUtils.i("查询所有好友失败");
                 }
             }
         });

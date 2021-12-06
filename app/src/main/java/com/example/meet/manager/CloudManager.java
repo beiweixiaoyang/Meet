@@ -272,6 +272,7 @@ public class CloudManager {
     public void startCall(Context context,String targetId, RongCallCommon.CallMediaType mediaType) {
         //检查设备是否可用
         if(!isVoIPEnabled(context)){
+            Toast.makeText(context,"当前设备不可用",Toast.LENGTH_SHORT).show();
             return;
         }
         List<String> usersId = new ArrayList<>();

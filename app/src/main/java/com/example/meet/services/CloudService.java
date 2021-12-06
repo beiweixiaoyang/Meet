@@ -24,7 +24,7 @@ import com.example.meet.manager.CloudManager;
 import com.example.meet.event.EventManager;
 import com.example.meet.event.MessageEvent;
 import com.example.meet.gson.TextBean;
-import com.example.meet.manager.LitePalManager;
+import com.example.meet.litepal.LitePalManager;
 import com.example.meet.manager.MediaPlayerManager;
 import com.example.meet.manager.WindowHelper;
 import com.example.meet.utils.LogUtils;
@@ -323,14 +323,9 @@ public class CloudService extends Service implements View.OnClickListener {
         public void onCallConnected(RongCallSession callSession, SurfaceView localVideo) {
             //建立通话
             LogUtils.i("onCallConnected");
-            /**
-             * 1.通话时长开始计时
-             * 2.关闭来电铃声
-             * 3.更新按钮状态
-             */
             //关闭铃声
             if (mAudioCallManager.isPlaying()) {
-                mAudioCallManager.stopPlay();
+                mAudioCallManager.pausePlay();
             }
             //开始计时
             mHandler.sendEmptyMessage(TIME_HANDLER);
@@ -354,8 +349,8 @@ public class CloudService extends Service implements View.OnClickListener {
             //重置计时时间
             callTime = 0;
             //播放挂断音乐
-            mAudioCallManager.stopPlay();
-            mAudioCallManager.startPlay(CloudManager.callAudioHangup);
+            mAudioCallManager.pausePlay();
+            mAudioHangUpManager.startPlay(CloudManager.callAudioHangup);
             //隐藏window窗口
             WindowHelper.getInstance().hideView(mFullAudioView);
             WindowHelper.getInstance().hideView(mFullVideoView);
@@ -554,16 +549,16 @@ public class CloudService extends Service implements View.OnClickListener {
         //音频
         if (type.equals(RongCallCommon.CallMediaType.AUDIO)) {
             if (index == 0) {
-                goneAudioView(false, true, true, false, false);
-            } else if (index == 1) {
                 goneAudioView(false, false, true, false, false);
+            } else if (index == 1) {
+                goneAudioView(false, true, true, false, false);
             }
             //视频
         } else if (type.equals(RongCallCommon.CallMediaType.VIDEO)) {
             if (index == 0) {
-                goneVideoView(true, false, false, true, true, false);
-            } else if (index == 1) {
                 goneVideoView(true, false, true, false, true, false);
+            } else if (index == 1) {
+                goneVideoView(true, false, false, true, true, false);
             }
         }
         BmobManager.getInstance().queryByObjectId(objectId, new FindListener<MeetUser>() {
@@ -653,23 +648,23 @@ public class CloudService extends Service implements View.OnClickListener {
         video_small_video.removeAllViews();
         video_big_video.removeAllViews();
         //判断本地窗口是否是小窗口
-        if(isSmallShowLocal){
+        if (isSmallShowLocal) {
             if (mLocalView != null) {
                 video_small_video.addView(mLocalView);
-                mLocalView.setZOrderOnTop(true);//设置surface在其他surface上层显示
+                mLocalView.setZOrderOnTop(true);
             }
-            if(mRemoteView!=null){
-                video_small_video.addView(mRemoteView);
+            if (mRemoteView != null) {
+                video_big_video.addView(mRemoteView);
                 mRemoteView.setZOrderOnTop(false);
             }
-        }else{
+        } else {
             if (mLocalView != null) {
                 video_big_video.addView(mLocalView);
                 mLocalView.setZOrderOnTop(false);
             }
             if (mRemoteView != null) {
                 video_small_video.addView(mRemoteView);
-                mRemoteView.setZOrderOnTop(false);
+                mRemoteView.setZOrderOnTop(true);
             }
         }
     }

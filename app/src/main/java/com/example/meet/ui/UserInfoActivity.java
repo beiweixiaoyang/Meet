@@ -20,6 +20,7 @@ import com.example.meet.adapter.CommonAdapter;
 import com.example.meet.adapter.CommonViewHolder;
 import com.example.meet.base.BaseUIActivity;
 import com.example.meet.bmob.BmobManager;
+import com.example.meet.bmob.Friend;
 import com.example.meet.bmob.MeetUser;
 import com.example.meet.manager.CloudManager;
 import com.example.meet.model.UserInfoModel;
@@ -110,14 +111,14 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
             }
         });
         //3.判断是否是好友关系
-        BmobManager.getInstance().queryMyFriend(new FindListener<BmobManager.Friend>() {
+        BmobManager.getInstance().queryMyFriend(new FindListener<Friend>() {
             @Override
-            public void done(List<BmobManager.Friend> list, BmobException e) {
+            public void done(List<Friend> list, BmobException e) {
                 if (e == null) {
                     if (list.size() > 0) {
                         //存在好友列表
                         for (int i = 0; i < list.size(); i++) {
-                            BmobManager.Friend friend = list.get(i);
+                            Friend friend = list.get(i);
                             if (friend.getFriendUser().getObjectId().equals(objectId)) {
                                 //是好友关系
                                 btn_add_friend.setVisibility(View.GONE);
