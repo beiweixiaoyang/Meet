@@ -33,6 +33,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Meet">
         <activity
+            android:name=".ui.PersonActivity"
+            android:exported="false"
+            android:label="个人中心"/>
+        <activity
             android:name=".ui.PrivateSetActivity"
             android:exported="false" />
         <activity

@@ -17,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.meet.R;
 import com.example.meet.adapter.CommonAdapter;
 import com.example.meet.adapter.CommonViewHolder;
+import com.example.meet.base.BaseFragment;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.Friend;
 import com.example.meet.bmob.MeetUser;
@@ -30,7 +31,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
 //好友列表tab
-public class AllFriendFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class AllFriendFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mAllFriendRefreshLayout;
     private RecyclerView mRecyclerView;

@@ -51,7 +51,7 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'cn.yipianfengye.android:zxing-library:2.2'
-
+    implementation 'cn.aigestudio.datepicker:DatePicker:2.2.0'
 
     //3D地图so及jar
     compile 'com.amap.api:3dmap:latest.integration'

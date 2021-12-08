@@ -7,14 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.meet.R;
+import com.example.meet.base.BaseFragment;
 import com.example.meet.fragment.chat.AllFriendFragment;
 import com.example.meet.fragment.chat.CallRecordFragment;
 import com.example.meet.fragment.chat.ChatRecordFragment;
@@ -26,7 +25,7 @@ import java.util.List;
 /**
  * 聊天界面
  */
-public class ChatFragment extends Fragment {
+public class ChatFragment extends BaseFragment {
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;

@@ -14,6 +14,7 @@ import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FetchUserInfoListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.QueryListener;
@@ -144,6 +145,15 @@ public class BmobManager {
     }
 
     /**
+     * 查询fateSet库
+     * @param listener
+     */
+    public void queryFateSet(FindListener<FateSet> listener) {
+        BmobQuery<FateSet> query = new BmobQuery<>();
+        query.findObjects(listener);
+    }
+
+    /**
      * @param nickname 昵称
      * @param file     头像
      * @param listener 是否上传完成的监听
@@ -216,15 +226,45 @@ public class BmobManager {
      */
     public void addPrivateSet(SaveListener<String> listener){
         PrivateSet privateSet=new PrivateSet();
-        privateSet.setObjectId(getCurrentUser().getObjectId());
+        privateSet.setId(getCurrentUser().getObjectId());
         privateSet.setPhone(getCurrentUser().getMobilePhoneNumber());
         privateSet.save(listener);
     }
 
+    /**
+     * 删除私有库
+     * @param objectId
+     * @param listener
+     */
     public void delPrivateSet(String objectId,UpdateListener listener){
         PrivateSet set = new PrivateSet();
         set.setObjectId(objectId);
         set.delete(listener);
+    }
+
+    /**
+     * 添加到fateSet库中
+     * @param listener
+     */
+    public void addFateSet(SaveListener<String> listener){
+        FateSet set = new FateSet();
+        set.setUserId(getCurrentUser().getObjectId());
+        set.save(listener);
+    }
+
+    /**
+     * 根据id删除库
+     * @param id
+     * @param listener
+     */
+    public void delFateSet(String id, UpdateListener listener) {
+        FateSet set = new FateSet();
+        set.setObjectId(id);
+        set.delete(listener);
+    }
+
+    public void fetchUserInfo(FetchUserInfoListener<BmobUser> listener) {
+        BmobUser.fetchUserInfo(listener);
     }
 
     public interface OnUploadListener {

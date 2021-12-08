@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">Meet</string>
+
+    <string-array name="ConstellatioArray">
+        <item>白羊座</item>
+        <item>金牛座</item>
+        <item>双子座</item>
+        <item>巨蟹座</item>
+        <item>狮子座</item>
+        <item>处女座</item>
+        <item>天秤座</item>
+        <item>天蝎座</item>
+        <item>射手座</item>
+        <item>摩羯座</item>
+        <item>水瓶座</item>
+        <item>双鱼座</item>
+    </string-array>
+
+    <string-array name="HobbyArray">
+        <item>运动</item>
+        <item>音乐</item>
+        <item>电影</item>
+        <item>绘画</item>
+        <item>小说</item>
+        <item>冒险</item>
+        <item>拼图</item>
+        <item>收藏</item>
+        <item>游戏</item>
+        <item>发呆</item>
+        <item>卖萌</item>
+        <item>网恋</item>
+    </string-array>
+
+    <string-array name="StatusArray">
+        <item>已婚</item>
+        <item>单身</item>
+        <item>热恋</item>
+        <item>单恋</item>
+    </string-array>
+
 </resources>

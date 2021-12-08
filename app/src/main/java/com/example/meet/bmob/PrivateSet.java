@@ -7,18 +7,15 @@ import cn.bmob.v3.BmobObject;
  */
 public class PrivateSet extends BmobObject {
 
-    private String objectId;
+    String id;
     private String phone;
 
-    @Override
-    public String getObjectId() {
-        return objectId;
+    public String getId() {
+        return id;
     }
 
-
-    @Override
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getPhone() {

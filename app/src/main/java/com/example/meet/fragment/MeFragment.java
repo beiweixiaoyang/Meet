@@ -14,15 +14,28 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.meet.R;
+import com.example.meet.base.BaseFragment;
+import com.example.meet.bmob.BmobManager;
+import com.example.meet.bmob.MeetUser;
+import com.example.meet.event.EventManager;
+import com.example.meet.event.MessageEvent;
 import com.example.meet.ui.NewFriendActivity;
+import com.example.meet.ui.PersonActivity;
 import com.example.meet.ui.PrivateSetActivity;
 import com.example.meet.ui.ShareImageActivity;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
+
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MeFragment extends Fragment implements View.OnClickListener{
+public class MeFragment extends BaseFragment implements View.OnClickListener{
 
-    private CircleImageView iv_mo_photo;
+    private CircleImageView iv_me_photo;
     private TextView tv_nickname;
     private LinearLayout ll_me_info;
     private LinearLayout ll_new_friend;
@@ -44,7 +57,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
      * 初始化View
      */
     private void initView(View view) {
-        iv_mo_photo=view.findViewById(R.id.iv_me_photo);
+        iv_me_photo =view.findViewById(R.id.iv_me_photo);
         ll_me_info=view.findViewById(R.id.ll_me_info);
         ll_new_friend=view.findViewById(R.id.ll_new_friend);
         ll_private_set=view.findViewById(R.id.ll_private_set);
@@ -58,20 +71,14 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         ll_share.setOnClickListener(this);
         ll_setting.setOnClickListener(this);
         ll_notice.setOnClickListener(this);
-//        Glide.with(this)
-//                .load(BmobManager.getInstance().getCurrentUser().getPhoto())
-//                .into(iv_mo_photo);
-//        tv_nickname.setText(BmobManager.getInstance().getCurrentUser().getNickName());
-        Glide.with(this)
-                .load("http://b-ssl.duitang.com/uploads/item/201607/27/20160727143727_v5kRZ.jpeg")
-                .into(iv_mo_photo);
-        tv_nickname.setText("卑微小杨");
+        loadMeInfo();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.ll_me_info:
+                startActivity(new Intent(getContext(), PersonActivity.class));
                 break;
             case R.id.ll_new_friend:
                 startActivity(new Intent(getContext(), NewFriendActivity.class));
@@ -87,5 +94,33 @@ public class MeFragment extends Fragment implements View.OnClickListener{
             case R.id.ll_notice:
                 break;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        switch (event.getType()) {
+            case EventManager.EVENT_REFRE_ME_INFO:
+                loadMeInfo();
+                break;
+        }
+    }
+
+    /**
+     * 读取个人信息
+     */
+    private void loadMeInfo() {
+        BmobManager.getInstance().queryByObjectId(BmobManager.getInstance().getCurrentUser().getObjectId(),
+                new FindListener<MeetUser>() {
+                    @Override
+                    public void done(List<MeetUser> list, BmobException e) {
+                        if(e == null){
+                            MeetUser meetUser = list.get(0);
+                            Glide.with(getContext())
+                                    .load(meetUser.getPhoto())
+                                    .into(iv_me_photo);
+                            tv_nickname.setText(meetUser.getNickName());
+                        }
+                    }
+                });
     }
 }

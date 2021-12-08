@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_save"
-        android:title="发表"
+        android:title="保存"
         app:showAsAction="always" />
 
 </menu>

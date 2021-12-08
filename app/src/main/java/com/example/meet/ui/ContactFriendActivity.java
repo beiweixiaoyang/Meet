@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,9 @@ import com.example.meet.adapter.CommonViewHolder;
 import com.example.meet.base.BaseBackActivity;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
+import com.example.meet.bmob.PrivateSet;
+import com.example.meet.litepal.LitePalManager;
+import com.example.meet.litepal.NewFriend;
 import com.example.meet.model.AddFriendModel;
 import com.example.meet.utils.LogUtils;
 
@@ -26,6 +30,13 @@ import java.util.Map;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * 通讯录导入好友
@@ -38,6 +49,7 @@ public class ContactFriendActivity extends BaseBackActivity {
     private Map<String, String> contactMap = new HashMap<>();
     private CommonAdapter<AddFriendModel> mCommonAdapter;
     private List<AddFriendModel> mLists = new ArrayList<>();
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,16 +95,52 @@ public class ContactFriendActivity extends BaseBackActivity {
             }
         });
         mContactRecyclerView.setAdapter(mCommonAdapter);
-        loadContact();
         loadUser();
     }
 
     /**
      * 读取用户信息
+     * 过滤掉PrivateSet中的用户
      */
     private void loadUser() {
+        disposable= Observable.create(new ObservableOnSubscribe<List<PrivateSet>>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<List<PrivateSet>> emitter) throws Exception {
+                loadContact();//读取联系人信息
+                BmobManager.getInstance().queryPrivateSet(new FindListener<PrivateSet>() {
+                    @Override
+                    public void done(List<PrivateSet> list, BmobException e) {
+                        emitter.onNext(list);
+                        emitter.onComplete();
+                    }
+                });
+
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<PrivateSet>>() {
+                    @Override
+                    public void accept(List<PrivateSet> privateSets) throws Exception {
+                        fixPrivateSet(privateSets);
+                    }
+                });
+    }
+
+    /**
+     * 从查询到的联系人中过滤掉privateSet中的用户
+     * @param privateSets
+     */
+    private void fixPrivateSet(List<PrivateSet> privateSets) {
+        List<String> userPhone=new ArrayList<>();
+        for (int i = 0; i < privateSets.size(); i++) {
+            userPhone.add(privateSets.get(i).getPhone());
+        }
         if (contactMap.size() > 0) {
             for (Map.Entry<String, String> entry : contactMap.entrySet()) {
+                //手机号码存在，跳过本次循环，过滤掉
+                if(userPhone.contains(entry.getValue())){
+                    continue;
+                }
                 BmobManager.getInstance().queryByPhone(entry.getKey(), new FindListener<MeetUser>() {
                     @Override
                     public void done(List<MeetUser> list, BmobException e) {

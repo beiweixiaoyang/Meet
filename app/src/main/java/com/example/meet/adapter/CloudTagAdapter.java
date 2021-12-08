@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.meet.R;
+import com.example.meet.model.StarUserModel;
 import com.moxun.tagcloudlib.view.TagsAdapter;
 
 import java.util.List;
@@ -18,11 +20,11 @@ import java.util.List;
 public class CloudTagAdapter extends TagsAdapter {
 
     private Context mContext;
-    private List<String> mLists;
+    private List<StarUserModel> mLists;
     private LayoutInflater mInflater;
 
 
-    public CloudTagAdapter(Context mContext, List<String> mLists) {
+    public CloudTagAdapter(Context mContext, List<StarUserModel> mLists) {
         this.mContext = mContext;
         this.mLists = mLists;
         mInflater= (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -39,30 +41,10 @@ public class CloudTagAdapter extends TagsAdapter {
         View view=mInflater.inflate(R.layout.layout_stat_view_item,null);
         ImageView iv_star_icon=view.findViewById(R.id.iv_star_icon);
         TextView tv_star_name=view.findViewById(R.id.tv_star_name);
-        tv_star_name.setText(mLists.get(position));
-        switch (position%10){
-            case 0:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_1);
-                break;
-            case 1:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_2);
-                break;
-            case 2:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_3);
-                break;
-            case 3:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_4);
-                break;
-            case 4:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_5);
-                break;
-            case 5:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_6);
-                break;
-            case 6:
-                iv_star_icon.setImageResource(R.drawable.img_guide_star_7);
-                break;
-        }
+        Glide.with(context)
+                .load(mLists.get(position).getPhotoUrl())
+                .into(iv_star_icon);
+        tv_star_name.setText(mLists.get(position).getNickName());
         return view;
     }
 

@@ -10,8 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.meet.R;
+import com.example.meet.base.BaseFragment;
 
-public class SquareFragment extends Fragment {
+public class SquareFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -79,6 +79,9 @@ public class PrivateSetActivity extends BaseBackActivity {
             public void done(String s, BmobException e) {
                 if(e == null){
                     currentId=s;
+                    LogUtils.e(s);
+                }else{
+                    LogUtils.e(e.toString());
                 }
             }
         });

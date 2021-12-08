@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.meet.R;
 import com.example.meet.adapter.CommonAdapter;
 import com.example.meet.adapter.CommonViewHolder;
+import com.example.meet.base.BaseFragment;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
 import com.example.meet.manager.CloudManager;
@@ -37,7 +37,7 @@ import io.rong.message.TextMessage;
 /**
  * 聊天记录tab
  */
-public class ChatRecordFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ChatRecordFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mChatRecordRefreshLayout;
     private RecyclerView mRecyclerView;
