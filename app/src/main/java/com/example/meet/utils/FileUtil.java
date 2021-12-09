@@ -101,6 +101,18 @@ public class FileUtil {
         activity.startActivityForResult(intent,ALBUM_REQUEST_CODE);
     }
 
+    public void toMusic(Activity activity){
+        Intent intent=new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        activity.startActivityForResult(intent,MUSIC_REQUEST_CODE);
+    }
+
+    public void toVideo(Activity activity){
+        Intent intent=new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("video/*");
+        activity.startActivityForResult(intent,VIDEO_REQUEST_CODE);
+    }
+
     /**
      * 获取相册中图片的真实uri
      */

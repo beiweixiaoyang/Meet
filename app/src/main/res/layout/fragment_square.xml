@@ -54,6 +54,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 <include
+                    android:visibility="gone"
                     android:id="@+id/item_empty_view"
                     layout="@layout/layout_empty_view"
                     android:layout_width="match_parent"

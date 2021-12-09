@@ -52,6 +52,7 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'cn.yipianfengye.android:zxing-library:2.2'
     implementation 'cn.aigestudio.datepicker:DatePicker:2.2.0'
+    implementation 'cn.jzvd:jiaozivideoplayer:7.0.5'
 
     //3D地图so及jar
     compile 'com.amap.api:3dmap:latest.integration'

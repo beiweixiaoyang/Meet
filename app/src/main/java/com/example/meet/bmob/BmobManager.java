@@ -99,6 +99,11 @@ public class BmobManager {
         query.findObjects(listener);
     }
 
+    public void queryAllSquare(FindListener<SquareSet> listener) {
+        BmobQuery<SquareSet> query = new BmobQuery<>();
+        query.findObjects(listener);
+    }
+
     /**
      * 根据objectId查询用户
      */
@@ -263,8 +268,22 @@ public class BmobManager {
         set.delete(listener);
     }
 
+    /**
+     * 获取用户信息
+     * @param listener
+     */
     public void fetchUserInfo(FetchUserInfoListener<BmobUser> listener) {
         BmobUser.fetchUserInfo(listener);
+    }
+
+    public void pushSquare(int mediaType,String text,String path,SaveListener<String> listener){
+        SquareSet squareSet=new SquareSet();
+        squareSet.setText(text);
+        squareSet.setPushTime(System.currentTimeMillis());
+        squareSet.setMediaUrl(path);
+        squareSet.setUserId(getCurrentUser().getObjectId());
+        squareSet.setPushType(mediaType);
+        squareSet.save(listener);
     }
 
     public interface OnUploadListener {
