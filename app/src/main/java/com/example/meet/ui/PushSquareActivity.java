@@ -150,9 +150,10 @@ public class PushSquareActivity extends BaseBackActivity implements View.OnClick
                 case ALBUM_REQUEST_CODE:
                 case MUSIC_REQUEST_CODE:
                 case VIDEO_REQUEST_CODE:
-                    //相册，音乐，视频 都是获取一个uri
+                    //相册，音乐，视频 都是获取uri
                     if (data != null) {
                         Uri uri = data.getData();
+                        LogUtils.e(uri.toString());
                         //通过uri获取到真实路径
                         String realPath = FileUtil.getInstance().
                                 getRealPathFromUri(PushSquareActivity.this, uri);
@@ -162,11 +163,11 @@ public class PushSquareActivity extends BaseBackActivity implements View.OnClick
                                     realPath.endsWith(".png") ||
                                     realPath.endsWith(".jpeg")) {
                                 tv_media_path.setText("图片");
-                                MEDIA_TYPE = SquareSet.PUSH_MUSIC;
+                                MEDIA_TYPE = SquareSet.PUSH_IMAGE;
 
                             } else if (realPath.endsWith(".mp3")) {
                                 tv_media_path.setText("音乐");
-                                MEDIA_TYPE = SquareSet.PUSH_IMAGE;
+                                MEDIA_TYPE = SquareSet.PUSH_MUSIC;
 
                             } else if (realPath.endsWith("mp4") ||
                                     realPath.endsWith("wav") ||

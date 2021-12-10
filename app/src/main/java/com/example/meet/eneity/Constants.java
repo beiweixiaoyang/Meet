@@ -18,4 +18,10 @@ public class Constants {
     public static final String INTENT_USER_PHOTO="userPhoto";
     //图片路径
     public static final String INTENT_IMAGE_PATH="imagePath";
+
+    //多语言
+    public static final String SP_LANGUAUE = "languaue";
+    //主题
+    public static final String SP_CHAT_THEME = "chat_theme";
+    public static final String INTENT_USER_NAME = "intent_user_name";
 }

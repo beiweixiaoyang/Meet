@@ -69,4 +69,29 @@ public class LitePalManager {
         newFriend.setStatus(status);
         newFriend.updateAll("userId=?",userId);
     }
+
+    /**
+     * 保存通话记录
+     *
+     * @param userId
+     * @param mediaType
+     * @param callStatus
+     */
+    public void saveCallRecord(String userId, int mediaType, int callStatus) {
+        CallRecord callRecord = new CallRecord();
+        callRecord.setUserId(userId);
+        callRecord.setMediaType(mediaType);
+        callRecord.setCallStatus(callStatus);
+        callRecord.setCallTime(System.currentTimeMillis());
+        baseSave(callRecord);
+    }
+
+    /**
+     * 查询通话记录
+     *
+     * @return
+     */
+    public List<CallRecord> queryCallRecord() {
+        return (List<CallRecord>) baseQuery(CallRecord.class);
+    }
 }

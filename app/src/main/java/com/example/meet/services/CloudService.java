@@ -1,11 +1,15 @@
 package com.example.meet.services;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,16 +21,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.example.meet.MainActivity;
 import com.example.meet.R;
 import com.example.meet.bmob.BmobManager;
 import com.example.meet.bmob.MeetUser;
+import com.example.meet.eneity.Constants;
+import com.example.meet.litepal.CallRecord;
 import com.example.meet.manager.CloudManager;
 import com.example.meet.event.EventManager;
 import com.example.meet.event.MessageEvent;
 import com.example.meet.gson.TextBean;
 import com.example.meet.litepal.LitePalManager;
 import com.example.meet.manager.MediaPlayerManager;
+import com.example.meet.manager.NotificationManager;
 import com.example.meet.manager.WindowHelper;
+import com.example.meet.ui.ChatActivity;
+import com.example.meet.ui.NewFriendActivity;
 import com.example.meet.utils.LogUtils;
 import com.example.meet.utils.SpUtils;
 import com.example.meet.utils.TimeUtil;
@@ -151,6 +165,13 @@ public class CloudService extends Service implements View.OnClickListener {
     //拨打还是接听
     private boolean isCallOrReceiver = true;
 
+    //是否移动
+    private boolean isMove = false;
+    //是否拖拽
+    private boolean isDrag = false;
+    private int mLastX;
+    private int mLastY;
+
     public CloudService() {
     }
 
@@ -191,7 +212,7 @@ public class CloudService extends Service implements View.OnClickListener {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent messageEvent) {
-        switch (messageEvent.getType()){
+        switch (messageEvent.getType()) {
             case EventManager.FLAG_SEND_CAMERA_VIEW:
                 SurfaceView sv = messageEvent.getmSurfaceView();
                 if (sv != null) {
@@ -242,6 +263,80 @@ public class CloudService extends Service implements View.OnClickListener {
         video_ll_answer.setOnClickListener(this);
         video_ll_hangup.setOnClickListener(this);
         video_small_video.setOnClickListener(this);
+        createSmallWindow();
+    }
+
+    /**
+     * 创建最小化的音频窗口
+     */
+    private void createSmallWindow() {
+        lpSmallView = WindowHelper.getInstance().createLayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP | Gravity.LEFT);
+        mSmallAudioView = WindowHelper.getInstance().getView(R.layout.layout_chat_small_audio);
+        mSmallTime = mSmallAudioView.findViewById(R.id.mSmallTime);
+
+        mSmallAudioView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //最大化
+                WindowHelper.getInstance().hideView(mSmallAudioView);
+                WindowHelper.getInstance().showView(mFullAudioView);
+            }
+        });
+
+        mSmallAudioView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                /**
+                 * OnTouch 和 OnClick 点击冲突
+                 * 如何判断是点击 还是 移动
+                 * 通过点击下的坐标 - 落地的坐标 如果移动则说明是移动 如果 = 0 ，那说明没有移动则是点击
+                 */
+                int mStartX = (int) event.getRawX();
+                int mStartY = (int) event.getRawY();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        isMove = false;
+                        isDrag = false;
+                        mLastX = (int) event.getRawX();
+                        mLastY = (int) event.getRawY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+
+                        //偏移量
+                        int dx = mStartX - mLastX;
+                        int dy = mStartY - mLastY;
+
+                        if (isMove) {
+                            isDrag = true;
+                        } else {
+                            if (dx == 0 && dy == 0) {
+                                isMove = false;
+                            } else {
+                                isMove = true;
+                                isDrag = true;
+                            }
+                        }
+
+                        //移动
+                        lpSmallView.x += dx;
+                        lpSmallView.y += dy;
+
+                        //重置坐标
+                        mLastX = mStartX;
+                        mLastY = mStartY;
+
+                        //WindowManager addView removeView updateView
+                        WindowHelper.getInstance().updateView(mSmallAudioView, lpSmallView);
+
+                        break;
+                }
+                return isDrag;
+            }
+        });
     }
 
     /**
@@ -448,54 +543,86 @@ public class CloudService extends Service implements View.OnClickListener {
      * @param message
      */
     private void parseMessage(Message message) {
+        LogUtils.i("message:" + message);
         String objectName = message.getObjectName();
         //文本消息
         if (objectName.equals(CloudManager.MESSAGE_TEXT_NAME)) {
             //获取消息主体
             TextMessage textMessage = (TextMessage) message.getContent();
             String content = textMessage.getContent();
-            TextBean textBean = new Gson().fromJson(content, TextBean.class);
+            LogUtils.i("content:" + content);
+            TextBean textBean = null;
+            try {
+                textBean = new Gson().fromJson(content, TextBean.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //普通消息
             if (textBean.getType().equals(CloudManager.TYPE_TEXT)) {
-                //普通文本消息
                 MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_TEXT);
                 event.setUserId(message.getSenderUserId());
-                event.setText(textBean.getMsg());
                 EventManager.post(event);
+                pushSystem(message.getSenderUserId(), 1, 0, 0, textBean.getMsg());
+                //添加好友消息
             } else if (textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)) {
-                //查询本地数据库，如果有重复的则不添加
-                LitePalManager.getInstance().
-                        saveNewFriend(textBean.getMsg(), message.getSenderUserId());
-            } else if (textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)) {
+                //存入数据库 Bmob RongCloud 都没有提供存储方法
+                //使用另外的方法来实现 存入本地数据库
+                LogUtils.i("添加好友消息");
+                saveNewFriend(textBean.getMsg(), message.getSenderUserId());
                 //同意添加好友消息
+            } else if (textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)) {
+                //1.添加到好友列表
                 BmobManager.getInstance().addFriend(message.getSenderUserId(), new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
                         if (e == null) {
-                            //刷新好友列表
-                            LogUtils.i(s);
+                            pushSystem(message.getSenderUserId(), 0, 1, 0, "");
+                            //2.刷新好友列表
+                            EventManager.post(EventManager.FLAG_UPDATE_FRIEND_LIST);
                         }
                     }
                 });
             }
         } else if (objectName.equals(CloudManager.MESSAGE_IMAGE_NAME)) {
-            ImageMessage imageMessage = (ImageMessage) message.getContent();
-            String url = imageMessage.getRemoteUri().toString();
-            if (!TextUtils.isEmpty(url)) {
-                MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_IMAGE);
-                event.setImgUrl(url);
-                event.setUserId(message.getSenderUserId());
-                EventManager.post(event);
+            try {
+                ImageMessage imageMessage = (ImageMessage) message.getContent();
+                String url = imageMessage.getRemoteUri().toString();
+                if (!TextUtils.isEmpty(url)) {
+                    LogUtils.i("url:" + url);
+                    MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_IMAGE);
+                    event.setImgUrl(url);
+                    event.setUserId(message.getSenderUserId());
+                    EventManager.post(event);
+                    pushSystem(message.getSenderUserId(), 1, 0, 0,"[图片]");
+                }
+            } catch (Exception e) {
+                LogUtils.e("e." + e.toString());
+                e.printStackTrace();
             }
         } else if (objectName.equals(CloudManager.MESSAGE_LOCATION_NAME)) {
             LocationMessage locationMessage = (LocationMessage) message.getContent();
+            LogUtils.e("locationMessage:" + locationMessage.toString());
             MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_LOCATION);
             event.setLa(locationMessage.getLat());
             event.setLo(locationMessage.getLng());
-            event.setAddress(locationMessage.getPoi());
             event.setUserId(message.getSenderUserId());
+            event.setAddress(locationMessage.getPoi());
             EventManager.post(event);
+            pushSystem(message.getSenderUserId(), 1, 0, 0, "[位置]");
         }
     }
+
+    /**
+     * 保存新朋友
+     *
+     * @param msg
+     * @param senderUserId
+     */
+    private void saveNewFriend(String msg, String senderUserId) {
+        pushSystem(senderUserId, 0, 0, 0, msg);
+        LitePalManager.getInstance().saveNewFriend(msg, senderUserId);
+    }
+
 
 
     /**
@@ -541,7 +668,8 @@ public class CloudService extends Service implements View.OnClickListener {
 
     /**
      * 更新窗口上的用户信息
-     * @param type 媒体类型 audio video
+     *
+     * @param type     媒体类型 audio video
      * @param index    0：呼叫方 1：被叫方
      * @param objectId
      */
@@ -668,4 +796,118 @@ public class CloudService extends Service implements View.OnClickListener {
             }
         }
     }
+
+    /**
+     * 保存音频记录
+     *
+     * @param id
+     * @param callStatus
+     */
+    private void saveAudioRecord(String id, int callStatus) {
+        LitePalManager.getInstance()
+                .saveCallRecord(id, CallRecord.MEDIA_TYPE_AUDIO, callStatus);
+    }
+
+    /**
+     * 保存视频记录
+     *
+     * @param id
+     * @param callStatus
+     */
+    private void saveVideoRecord(String id, int callStatus) {
+        LitePalManager.getInstance()
+                .saveCallRecord(id, CallRecord.MEDIA_TYPE_VIDEO, callStatus);
+    }
+
+    /**
+     * @param id          发消息id
+     * @param type        0：特殊消息 1：聊天消息
+     * @param friendType  0: 添加好友请求 1：同意好友请求
+     * @param messageType 0：文本  1：图片 2：位置
+     */
+    private void pushSystem(final String id, final int type, final int friendType, final int messageType, final String msgText) {
+        LogUtils.i("pushSystem");
+        BmobManager.getInstance().queryByObjectId(id, new FindListener<MeetUser>() {
+            @Override
+            public void done(List<MeetUser> list, BmobException e) {
+                if (e == null) {
+                    if (list.size() > 0) {
+                        MeetUser meetUser = list.get(0);
+                        String text = "";
+                        if (type == 0) {
+                            switch (friendType) {
+                                case 0:
+                                    text = meetUser.getNickName() + "请求添加好友";
+                                    break;
+                                case 1:
+                                    text = meetUser.getNickName() + "同意添加好友";
+                                    break;
+                            }
+                        } else if (type == 1) {
+                            switch (messageType) {
+                                case 0:
+                                    text = msgText;
+                                    break;
+                                case 1:
+                                    text = "[图片]";
+                                    break;
+                                case 2:
+                                    text = "[位置]";
+                                    break;
+                            }
+                        }
+                        pushBitmap(type, friendType, meetUser, meetUser.getNickName(), text, meetUser.getPhoto());
+                    }
+                }
+            }
+        });
+    }
+
+
+    /**
+     * 发送通知
+     *
+     * @param type       0：特殊消息 1：聊天消息
+     * @param friendType 0: 添加好友请求 1：同意好友请求
+     * @param meetUser     用户对象
+     * @param title      标题
+     * @param text       内容
+     * @param url        头像Url
+     */
+    private void pushBitmap(final int type, final int friendType, final MeetUser meetUser, final String title, final String text, String url) {
+        LogUtils.i("pushBitmap");
+        Glide.with(this)
+                .asBitmap().load(url).centerCrop()
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .format(DecodeFormat.PREFER_RGB_565)
+                // 取消动画，防止第一次加载不出来
+                .dontAnimate()
+                //加载缩略图
+                .thumbnail(0.3f)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        if (type == 0) {
+                            if (friendType == 0) {
+                                Intent intent = new Intent(CloudService.this, NewFriendActivity.class);
+                                PendingIntent pi = PendingIntent.getActivities(CloudService.this, 0, new Intent[]{intent}, PendingIntent.FLAG_CANCEL_CURRENT);
+                                NotificationManager.getInstance().pushAddFriendNotification(meetUser.getObjectId(), title, text, resource, pi);
+                            } else if (friendType == 1) {
+                                Intent intent = new Intent(CloudService.this, MainActivity.class);
+                                PendingIntent pi = PendingIntent.getActivities(CloudService.this, 0, new Intent[]{intent}, PendingIntent.FLAG_CANCEL_CURRENT);
+                                NotificationManager.getInstance().pushArgeedFriendNotification(meetUser.getObjectId(), title, text, resource, pi);
+                            }
+                        } else if (type == 1) {
+                            Intent intent = new Intent(CloudService.this, ChatActivity.class);
+                            intent.putExtra(Constants.INTENT_USER_ID, meetUser.getObjectId());
+                            intent.putExtra(Constants.INTENT_USER_NAME, meetUser.getNickName());
+                            intent.putExtra(Constants.INTENT_USER_PHOTO, meetUser.getPhoto());
+                            PendingIntent pi = PendingIntent.getActivities(CloudService.this, 0, new Intent[]{intent}, PendingIntent.FLAG_CANCEL_CURRENT);
+                            NotificationManager.getInstance().pushMessageNotification(meetUser.getObjectId(), title, text, resource, pi);
+                        }
+                    }
+                });
+    }
+
 }

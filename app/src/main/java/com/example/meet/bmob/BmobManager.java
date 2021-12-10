@@ -286,6 +286,16 @@ public class BmobManager {
         squareSet.save(listener);
     }
 
+    /**
+     * 查询更新
+     *
+     * @param listener
+     */
+    public void queryUpdateSet(FindListener<UpdateSet> listener) {
+        BmobQuery<UpdateSet> bmobQuery = new BmobQuery<>();
+        bmobQuery.findObjects(listener);
+    }
+
     public interface OnUploadListener {
         void onUploadDone();
 

@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 
 import java.util.HashMap;
 
+import cn.jzvd.Jzvd;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -339,5 +340,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 DialogManager.getInstance().hideDialog(mUploadDialog);
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Jzvd.backPress()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Jzvd.releaseAllVideos();
     }
 }

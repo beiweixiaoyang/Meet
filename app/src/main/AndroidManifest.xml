@@ -33,6 +33,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Meet">
         <activity
+            android:name=".ui.ChatThemeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.SettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.PushSquareActivity"
             android:exported="false" />
         <activity
@@ -110,7 +116,9 @@
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".ui.GuideActivity"

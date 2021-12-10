@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * 文件操作工具类
@@ -212,5 +214,27 @@ public class FileUtil {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, mUriTempFile);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         mActivity.startActivityForResult(intent, CAMERA_CROP_RESULT);
+    }
+
+    /**
+     * 获取视频的第一帧数据，返回一个bitmap
+     *
+     * @param videoUrl 视频url
+     * @return bitmap
+     */
+    public Bitmap getNetVideoBitmap(String videoUrl) {
+        Bitmap bitmap = null;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            //根据url获取缩略图
+            retriever.setDataSource(videoUrl, new HashMap());
+            //获得第一帧图片
+            bitmap = retriever.getFrameAtTime();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } finally {
+            retriever.release();
+        }
+        return bitmap;
     }
 }

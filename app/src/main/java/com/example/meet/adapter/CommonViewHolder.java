@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.meet.R;
 
 import java.io.File;
 
@@ -68,6 +71,25 @@ public class CommonViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
+     * 设置图片Url
+     */
+    public CommonViewHolder setImageUrl(Context context, int viewId, String url,int w,int h){
+        ImageView imageView=getView(viewId);
+        Glide.with(context.getApplicationContext())
+                .load(url)
+                .override(w, h)
+                .format(DecodeFormat.PREFER_RGB_565)
+                // 取消动画，防止第一次加载不出来
+                .dontAnimate()
+                //加载缩略图
+                .thumbnail(0.3f)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageView);
+        return this;
+    }
+
+    /**
      * 设置图片资源
      */
     public CommonViewHolder setImageFile(Context context, int viewId, File file){
@@ -103,4 +125,18 @@ public class CommonViewHolder extends RecyclerView.ViewHolder {
         linearLayout.setVisibility(isVisibility);
         return this;
     }
+
+    /**
+     * 设置文本颜色
+     *
+     * @param viewId
+     * @param color
+     * @return
+     */
+    public CommonViewHolder setTextColor(int viewId, int color) {
+        TextView tv = getView(viewId);
+        tv.setTextColor(color);
+        return this;
+    }
+
 }

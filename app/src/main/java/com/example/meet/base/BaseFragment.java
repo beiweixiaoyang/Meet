@@ -95,7 +95,7 @@ public class BaseFragment extends Fragment {
     protected void requestWindowPermission(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && !Settings.canDrawOverlays(activity)) {
-            Toast.makeText(activity, "当前无权限，请授权", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "当前无窗口权限，请授权", Toast.LENGTH_SHORT).show();
             activity.startActivity(
                     new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                             Uri.parse("package:" + activity.getPackageName())));
